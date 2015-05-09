@@ -1,8 +1,11 @@
 import java.awt.Container;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -221,6 +224,21 @@ public class fileio{
 		}
 
 		return i;
+	}
+	
+	static BufferedImage BufferLoadImage(String fileName){
+		InputStream is = null;
+		try {
+			is = new FileInputStream(fileName);
+			//BufferedImage img = new BufferedImage(5000, 5000, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+			BufferedImage img = ImageIO.read(is);
+			return img;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (is != null) try { is.close(); } catch (IOException e) {}
+		}
+		
 	}
 
 }

@@ -1,6 +1,9 @@
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 
@@ -41,8 +44,11 @@ public class MapDraw {
 			cow = MaxY;
 		if(MaxX < row)
 			row = MaxX;
-		
-		
+		long start;
+		long end;
+		start = System.currentTimeMillis();
+		//Graphics2D g2 = (Graphics2D)g;
+		//g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
 		try{
 			 for(int i=rowFirst;i<row;i++){
 				 for(int j=cowFirst;j<cow;j++){
@@ -66,9 +72,11 @@ public class MapDraw {
 			 
 		 }catch(NullPointerException e){
 	 }
+		 
+
 		 g.setColor(Color.red);
 		 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth, (MouseY/BoundaryHeight)*BoundaryHeight, BoundaryWidth, BoundaryHeight);
-		
+		System.out.println(System.currentTimeMillis()-start);
 	}
 	
 	//レイヤーをどうのこうのする場所
@@ -134,6 +142,37 @@ public class MapDraw {
 			 */
 
 		 
+	}
+	
+	//透明度の変更
+	//changeImageに透明度を変えたい画像
+	//transparencyに透明度(0から255)
+	public static void changeTransparent(BufferedImage changeImage,int transparency){
+		int width = changeImage.getWidth();
+		int height = changeImage.getHeight();
+		transparency = transparency << 24;
+		
+		for(int i=0;i<width;i++){
+			for(int j=0;j<height;j++){
+				changeImage.setRGB(i, j,
+						changeImage.getRGB(i, j) + transparency);
+			}
+		}
+		
+		
+	}
+	
+	//透明度の変更
+	//changeImageに透明度を変えたい画像
+	//transparencyに透明度(0から1)
+	public static void changeTransparent(Image changeImage,float transparency){
+		Graphics g = changeImage.getGraphics();
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+		g2.drawImage(changeImage, 0, 0, null);
+		g2.dispose();
+		
+		
 	}
 	
 }

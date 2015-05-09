@@ -3,6 +3,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -45,6 +46,7 @@ public class Mapediter extends JFrame{
     int eheight;
     MapDraw md = new MapDraw();
     MapChipManage mcm = new MapChipManage();
+    static BufferedImage MapEditerBuffer;
 	static ImageIcon MapEditerIcon;
 	static Image MapEditerImage;
 	
@@ -610,8 +612,11 @@ class mapdefinition extends JDialog implements ActionListener{
 					}
 					//マップチップ
 					me.png = ("map\\"+textpng.getText());
-					Mapediter.MapEditerIcon = new ImageIcon(me.png);
+					Mapediter.MapEditerBuffer = fileio.BufferLoadImage(me.png);
+					MapDraw.changeTransparent(Mapediter.MapEditerBuffer,127);
+					Mapediter.MapEditerIcon = new ImageIcon(Mapediter.MapEditerBuffer);
 					Mapediter.MapEditerImage = Mapediter.MapEditerIcon.getImage();
+					//MapDraw.changeTransparent(Mapediter.MapEditerImage,0.1f);
 					Mapediter.mc = new mapchip();
 					setVisible(false);
 				}
