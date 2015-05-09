@@ -44,36 +44,71 @@ public class MapDraw {
 			cow = MaxY;
 		if(MaxX < row)
 			row = MaxX;
+		int[] arg = new int[4];
+		int tmp = pngWidth/BoundaryWidth;
+
+
+		
 		long start;
-		long end;
 		start = System.currentTimeMillis();
 		//Graphics2D g2 = (Graphics2D)g;
+
 		//g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
 		try{
 			 for(int i=rowFirst;i<row;i++){
 				 for(int j=cowFirst;j<cow;j++){
 					 if(map[i][j] == -1) 
 						 g.drawRect(i*BoundaryWidth, j*BoundaryHeight, BoundaryWidth, BoundaryHeight);
-					 else g.drawImage(MapImage,BoundaryWidth*i,BoundaryHeight*j,
-							 
-							 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
-							 
-							 (map[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth, (map[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight,
-							 ((map[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth)+BoundaryWidth, ((map[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight)+BoundaryHeight,null);
-							 /*(BoundaryWidth*map[i][j])%pngWidth,((BoundaryHeight*map[i][j])/pngWidth)*BoundaryHeight,
-							 (BoundaryWidth*map[i][j])%pngWidth+BoundaryWidth,(((BoundaryHeight*map[i][j])/pngWidth)*BoundaryHeight+BoundaryHeight),null);*/
+					 else {
+						 
+						 arg[0] = BoundaryWidth*i;
+						 arg[1] = BoundaryHeight*j;
+						 arg[2] = arg[0] + BoundaryWidth;
+						 arg[3] = arg[1] + BoundaryHeight;
+						 
+						 
+						 g.drawImage(Mapediter.MapEditerImage3,arg[0],arg[1],
+								 arg[2],arg[3],
+								 (Mapediter.Map3[i][j]%tmp)*BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight,
+								 (Mapediter.Map3[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+						 g.drawImage(Mapediter.MapEditerImage2,arg[0],arg[1],
+								 arg[2],arg[3],
+								 (Mapediter.Map2[i][j]%tmp)*BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight,
+								 (Mapediter.Map2[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+						 g.drawImage(Mapediter.MapEditerImage,arg[0],arg[1],
+								 arg[2],arg[3],
+								 (Mapediter.Map[i][j]%tmp)*BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight,
+								 (Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+
+						 
+						 
+						 
+						 
+						/* g.drawImage(Mapediter.MapEditerImage3,BoundaryWidth*i,BoundaryHeight*j,
+								 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
+								 (Mapediter.Map3[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth, (Mapediter.Map3[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight,
+								 ((Mapediter.Map3[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth)+BoundaryWidth, ((Mapediter.Map3[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight)+BoundaryHeight,null);
+						 g.drawImage(Mapediter.MapEditerImage2,BoundaryWidth*i,BoundaryHeight*j,
+								 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
+								 (Mapediter.Map2[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth, (Mapediter.Map2[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight,
+								 ((Mapediter.Map2[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth)+BoundaryWidth, ((Mapediter.Map2[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight)+BoundaryHeight,null);
+						 g.drawImage(MapImage,BoundaryWidth*i,BoundaryHeight*j,
+								 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
+								 (Mapediter.Map[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth, (Mapediter.Map[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight,
+								 ((Mapediter.Map[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth)+BoundaryWidth, ((Mapediter.Map[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight)+BoundaryHeight,null);
+						 */
 						//g.drawImage(image2,x出力最初,y出力最初,
 					 					//出力最後,出力最後,
 					 					//元画像最初,元画像最初,
 					 					//元画像最後,元画像最後,null);
-					 //System.out.println(cow);
+					 }
 				 }
 			 }
 			 
 		 }catch(NullPointerException e){
 	 }
 		 
-
+		 
 		 g.setColor(Color.red);
 		 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth, (MouseY/BoundaryHeight)*BoundaryHeight, BoundaryWidth, BoundaryHeight);
 		System.out.println(System.currentTimeMillis()-start);
@@ -164,15 +199,17 @@ public class MapDraw {
 	
 	//透明度の変更
 	//changeImageに透明度を変えたい画像
-	//transparencyに透明度(0から1)
-	public static void changeTransparent(Image changeImage,float transparency){
-		Graphics g = changeImage.getGraphics();
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+	//transparencyに透明度(0から255)
+	public static void changeTransparent(BufferedImage changeImage,int R,int G,int B,int A){
+		Color c = new Color(R,G,B,A);
+		Graphics2D g2 = (Graphics2D) changeImage.getGraphics();
 		g2.drawImage(changeImage, 0, 0, null);
+		g2.setColor(c);
+		g2.fillRect(0, 0, changeImage.getWidth(null),changeImage.getHeight(null));
 		g2.dispose();
 		
 		
 	}
+
 	
 }

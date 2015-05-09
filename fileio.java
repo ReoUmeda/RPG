@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -239,6 +240,22 @@ public class fileio{
 			if (is != null) try { is.close(); } catch (IOException e) {}
 		}
 		
+	}
+	static Image LoadImage(String fileName){
+		BufferedImage MapEditerBuffer = BufferLoadImage(fileName);
+		MapDraw.changeTransparent(MapEditerBuffer, 0, 0, 0, 0);
+		ImageIcon MapEditerIcon = new ImageIcon(MapEditerBuffer);
+		Image ret = MapEditerIcon.getImage();
+		
+		return ret;
+	}
+	static Image LoadImage(String fileName,int R,int G,int B,int A){
+		BufferedImage MapEditerBuffer = BufferLoadImage(fileName);
+		MapDraw.changeTransparent(MapEditerBuffer, R, G, B, A);
+		ImageIcon MapEditerIcon = new ImageIcon(MapEditerBuffer);
+		Image ret = MapEditerIcon.getImage();
+		
+		return ret;
 	}
 
 }

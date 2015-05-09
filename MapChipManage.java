@@ -9,7 +9,12 @@ public class MapChipManage {
 		z=e.getButton();
 		if(Mapediter.Map != null && z == MouseEvent.BUTTON1) {
 			try{
-				Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				if(Mapediter.MapMode == 0)
+					Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				else if(Mapediter.MapMode == 1)
+					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				else if(Mapediter.MapMode == 2)
+					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
 			}
 			catch(ArrayIndexOutOfBoundsException e1){
 				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));
@@ -17,7 +22,12 @@ public class MapChipManage {
 			System.out.println(Mapediter.MapChipNumder);
 		}
 		else if(z == MouseEvent.BUTTON3){
-			Mapediter.MapChipNumder = Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight];
+			if(Mapediter.MapMode == 0)
+				Mapediter.MapChipNumder = Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight];
+			else if(Mapediter.MapMode == 1)
+				Mapediter.MapChipNumder = Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight];
+			else if(Mapediter.MapMode == 2)
+				Mapediter.MapChipNumder = Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight];
 		}
 		//System.out.println("mousepress "+y+","+x+"");
 	}
@@ -29,7 +39,12 @@ public class MapChipManage {
 
 		if(Mapediter.Map != null && MouseButtonForward == MouseEvent.BUTTON1) {
 			try{
-				Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				if(Mapediter.MapMode == 0)
+					Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				else if(Mapediter.MapMode == 1)
+					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				else if(Mapediter.MapMode == 2)
+					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
 			}catch(ArrayIndexOutOfBoundsException e1){
 				//System.out.println(e1);
 			}
@@ -38,6 +53,8 @@ public class MapChipManage {
 		//System.out.println("mousepress "+y+","+x+"");
 	}
 
+	
+	//•¡”‘I‘ğ –¢Š®¬
 	public void MapChipManageMapMouseDragged(MouseEvent e,
 			int MouseButtonForward, int MouseButtonX, int MouseButtonY,
 			int MouseButtonNowPointX, int MouseButtonNowPointY) {

@@ -49,6 +49,9 @@ public class Mapediter extends JFrame{
     static BufferedImage MapEditerBuffer;
 	static ImageIcon MapEditerIcon;
 	static Image MapEditerImage;
+	static Image MapEditerImage2;
+	static Image MapEditerImage3;
+	static Image MapEditerImage4;//現在使用していない  マップチップの色を変更よう予定
 	
 	static java.awt.GraphicsEnvironment env = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
 	static java.awt.DisplayMode displayMode = env.getDefaultScreenDevice().getDisplayMode();
@@ -187,6 +190,10 @@ public class Mapediter extends JFrame{
 			menufileitem3.addActionListener(new MenuFileItemActionListener());
 			//レイヤー
 			layeritem1.addActionListener(new LayerItemActionListener());
+			layeritem2.addActionListener(new LayerItemActionListener());
+			layeritem3.addActionListener(new LayerItemActionListener());
+			layeritem4.addActionListener(new LayerItemActionListener());
+			layeritem5.addActionListener(new LayerItemActionListener());
 			
 
 			
@@ -257,14 +264,26 @@ public class Mapediter extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if(((JMenuItem)e.getSource()).getText()=="レイヤー1"){
 					MapMode = 0;
+					Mapediter.MapEditerImage = fileio.LoadImage(png);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="レイヤー2"){
 					MapMode = 1;
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="レイヤー3"){
 					MapMode = 2;
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="イベント"){
@@ -273,8 +292,13 @@ public class Mapediter extends JFrame{
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="通過設定"){
 					MapMode = 4;
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,127);
 					repaint();
 				}
+				
 
 			}
 		}
@@ -346,15 +370,28 @@ public class Mapediter extends JFrame{
 		//repaintでっす
 		class RePaintThread implements Runnable{
 			public void run(){
-				while(true){
-					repaint();
-					try {
-						Thread.sleep(16);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+			    long error = 0;  
+			    int fps = 60;  
+			    long idealSleep = (1000 << 16) / fps;  
+			    long oldTime;  
+			    long newTime = System.currentTimeMillis() << 16; 
+			    long sleepTime;
+			    while (true) {  
+			      oldTime = newTime;  
+			      repaint();  
+			      newTime = System.currentTimeMillis() << 16;  
+			      sleepTime = idealSleep - (newTime - oldTime) - error; // 休止できる時間  
+			      if (sleepTime < 0x20000) sleepTime = 0x20000; // 最低でも2msは休止  
+			      oldTime = newTime;  
+			      try {
+					Thread.sleep(sleepTime >> 16);// 休止
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}   
+			      newTime = System.currentTimeMillis() << 16;  
+			      error = newTime - oldTime - sleepTime; // 休止時間の誤差  
+			    }  
 			}
 
 		}
@@ -366,10 +403,9 @@ public class Mapediter extends JFrame{
 
 
 class mapchip extends JDialog{
-	Mapediter me;
 	//ImageIcon mapchipicon = new ImageIcon(me.png); //タイトルイメージ読み込み
-	ImageIcon mapchipicon = new ImageIcon(me.png);
-	Image mapchipimage = mapchipicon.getImage();
+	//ImageIcon mapchipicon = new ImageIcon(me.png);
+	Image mapchipimage = fileio.LoadImage(Mapediter.png);
 	MapDraw md = new MapDraw();
 	static int MouseButtonX = -1;//MousePush時のXの値がはいる
 	static int MouseButtonY = -1;//MousePush時のYの値がはいる
@@ -424,7 +460,7 @@ class mapchip extends JDialog{
 		
 		//マップチップ表示画面
 		if((Mapediter.DesktopHeight -100) < PngHeightMax)
-			PngHeightMax = me.DesktopHeight -100;
+			PngHeightMax = Mapediter.DesktopHeight -100;
 		if((Mapediter.DesktopWidth -100) < PngWidthMax){
 			PngWidthMax = Mapediter.MapChipPngWidth -100;
 		}
@@ -453,6 +489,9 @@ class mapchip extends JDialog{
 		getContentPane().setPreferredSize(new Dimension(SetWidth,SetHeight));
 		pack();
 	}
+	public void MapChipImageChange(){
+		
+	}
 	
 	public class mapchipMouseListener implements MouseListener {
 
@@ -475,7 +514,7 @@ class mapchip extends JDialog{
 			MouseButtonY = y;
 			MouseButtonAllOrOne = 1;
 			
-			me.MapChipNumder =(x/me.BoundaryWidth)+(y/me.BoundaryHeight)*(Mapediter.MapChipPngWidth/me.BoundaryWidth);
+			Mapediter.MapChipNumder =(x/Mapediter.BoundaryWidth)+(y/Mapediter.BoundaryHeight)*(Mapediter.MapChipPngWidth/Mapediter.BoundaryWidth);
 			repaint();
 
 		}
@@ -612,11 +651,13 @@ class mapdefinition extends JDialog implements ActionListener{
 					}
 					//マップチップ
 					me.png = ("map\\"+textpng.getText());
-					Mapediter.MapEditerBuffer = fileio.BufferLoadImage(me.png);
-					MapDraw.changeTransparent(Mapediter.MapEditerBuffer,127);
-					Mapediter.MapEditerIcon = new ImageIcon(Mapediter.MapEditerBuffer);
-					Mapediter.MapEditerImage = Mapediter.MapEditerIcon.getImage();
-					//MapDraw.changeTransparent(Mapediter.MapEditerImage,0.1f);
+					
+					//MapChip画像読み込み
+					Mapediter.MapEditerImage = fileio.LoadImage(me.png);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(me.png,255,255,255,127);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(me.png,255,255,255,127);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(me.png,255,255,255,127);
+					
 					Mapediter.mc = new mapchip();
 					setVisible(false);
 				}
