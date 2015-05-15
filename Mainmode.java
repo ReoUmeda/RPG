@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -120,11 +121,11 @@ public class Mainmode extends JFrame implements Runnable{
 				 
 			 }
 			 if(Key.mode == 1){
-				 if(ch==0){
+				/* if(ch==0){
 					 srpg satansan = new srpg(g,panel);
 					 ch=1;
 				 }
-				 srpg satansan = new srpg(g,panel);
+				 srpg satansan = new srpg(g,panel);*/
 				 
 			 }
 			 
@@ -192,6 +193,26 @@ public class Mainmode extends JFrame implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			//外観変更
+			try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+					JFrame.setDefaultLookAndFeelDecorated(true);
+					SwingUtilities.updateComponentTreeUI(this);
+					System.out.println(UIManager.getInstalledLookAndFeels());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		// タイトルの設定
 		setTitle("1G120080  梅田玲旺");
 

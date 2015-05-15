@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
+/*
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -30,7 +30,7 @@ public class srpg implements Runnable{
 		srpg blacksatansan = new srpg();
 	}
 	public srpg(){
-		/*// タイトルの設定
+		 タイトルの設定
 		setTitle("1G120080  梅田玲旺");
 
 
@@ -57,7 +57,7 @@ public class srpg implements Runnable{
 		// フレームの設定
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(806, 632);
-		setVisible(true);*/
+		setVisible(true);
 	}
 	public srpg(JPanel panel) {
 
@@ -116,7 +116,7 @@ public class srpg implements Runnable{
 				case 8:
 				g.drawImage(image2,xx*j,yy*i,xx*j+16,yy*i+16,x*0,y*0,x*0+16,y*0+16,null);
 				break;
-				}*/
+				}
 			}
 		}
 	}
@@ -147,4 +147,4 @@ public class srpg implements Runnable{
 
 	}
 
-}
+}*/

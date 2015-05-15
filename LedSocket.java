@@ -235,22 +235,32 @@ public class LedSocket extends Socket {
 	    int max = 1000;
 	    Random rnm = new Random();
 
-	    /*for(int i=0;i<30;i++){
-		    red = rnm.nextInt(max);
+	    for(int i=0;i<3;i++){
+		   /* red = rnm.nextInt(max);
 		    green = rnm.nextInt(max);
 		    blue = rnm.nextInt(max);
 		    yellow = rnm.nextInt(max);
-		    index = rnm.nextInt(30);
-		    s.send(index,red, green, blue, yellow);
-		    try {
+		    index = rnm.nextInt(30);*/
+		    //s.send(index,red, green, blue, yellow);
+	    	 s.send(0, 0, 0, 0);
+	    	 try {
 				Thread.sleep(1000);
-			    }
-			    catch(InterruptedException e) {
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.exit(1);
-			    }
-	    }*/
-	    s.send(0,0,0,0);
+			}
+	    	 s.send(1000, 1000, 1000, 1000);
+	    	 try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+	    }
+	    s.send(10,10,10,10);
+	    s.send(1, 1, 1, 1);
+	    s.send(0, 0, 0, 0);
 	    System.out.println();
 	   /* try {
 		Thread.sleep(1000);

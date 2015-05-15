@@ -1,13 +1,47 @@
 //1G120080 梅田玲旺
-import java.io.*;
-import java.util.ArrayList;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Random;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 
@@ -24,6 +58,7 @@ public class Mapediter extends JFrame{
 	RePaintThread rpt = new RePaintThread();
 	Thread RPTThread = new Thread(rpt);
 	JScrollPane mapediterscroll;
+	
 
 	
 	static int[][] Map;//レイヤー1 上
@@ -34,7 +69,8 @@ public class Mapediter extends JFrame{
 	static int[][] MapImage;//実際に書き込むよう(これが表示される)
 	static int MapMode = 0;//Mapのどのレイヤーを編集するか?
 	static int BoundaryWidth=16,BoundaryHeight=16; // マップチップ境界
-	static int MapChipNumder=-1;
+	static int MapChipNumder=-1;//現在選択しているマップチップナンバー
+	static int MapPassNumder=-1;//マップが通れるか
 	static int cow,row; //マップ縦横 (逆かも?)
 	static int MapChipPngWidth = -1; //マップチップの横の長さ
 	static int MapChipPngHeight = -1; //マップチップの縦の長さ
@@ -52,6 +88,8 @@ public class Mapediter extends JFrame{
 	static Image MapEditerImage2;
 	static Image MapEditerImage3;
 	static Image MapEditerImage4;//現在使用していない  マップチップの色を変更よう予定
+	static ImageIcon iconTmp = new ImageIcon("System/EV 32×32alfa.png");
+	static Image MapEditerImage5 = iconTmp.getImage();//Eventよう
 	
 	static java.awt.GraphicsEnvironment env = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
 	static java.awt.DisplayMode displayMode = env.getDefaultScreenDevice().getDisplayMode();
@@ -65,6 +103,9 @@ public class Mapediter extends JFrame{
 	int MouseButtonNowPointX = -1;//現在のマウスの位置X
 	int MouseButtonNowPointY = -1;//現在のマウスの位置Y
 	
+	
+	LedSocket s = null;//調光よう
+	Random rnd = new Random();
 	
 	JPanel panelediter = new JPanel()
 	{
@@ -96,9 +137,11 @@ public class Mapediter extends JFrame{
 		 }
 	};
 	  public static void main(String args[]){
-
 		  
-		    Mapediter me = new Mapediter();
+		  //外観変更
+		  //とりあえず
+		  uniLookAndFeel mes = new uniLookAndFeel(null);
+		  //Mapediter me = new Mapediter();
 		    //setUndecorated(true);
 		  }
 		class MyWindowListenerb extends WindowAdapter
@@ -109,6 +152,13 @@ public class Mapediter extends JFrame{
 				Container cnt = getContentPane();
 				int type = JOptionPane.WARNING_MESSAGE;
 				type=JOptionPane.showConfirmDialog(cnt, "保存されていないデータは消えますがよろしいですか?", "終了",JOptionPane.YES_NO_OPTION, type);
+				if(s != null)
+					try {
+						s.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				if(type==JOptionPane.YES_OPTION){
 					if(Key.mode != 3)System.exit(0);
 					else {
@@ -122,10 +172,15 @@ public class Mapediter extends JFrame{
 		}
 		public Mapediter()
 		{
+			//System.out.println(System.getProperty("java.ext.dirs"));
 
 			//外観変更
-			try {
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			/*try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					UIManager.setLookAndFeel("com.jtattoo.plaf.mcwin.McWinLookAndFeel");
+					JFrame.setDefaultLookAndFeelDecorated(true);
+					SwingUtilities.updateComponentTreeUI(this);
+					System.out.println(UIManager.getInstalledLookAndFeels());
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -138,7 +193,8 @@ public class Mapediter extends JFrame{
 				} catch (UnsupportedLookAndFeelException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
+
 			
 			// タイトルの設定
 			setTitle("Mapediter");
@@ -238,7 +294,7 @@ public class Mapediter extends JFrame{
 
 			RPTThread.start();
 			//rtc = rtc & 0xFF;
-
+			
 
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
@@ -252,6 +308,16 @@ public class Mapediter extends JFrame{
 					panelediter.setPreferredSize(new Dimension(row*BoundaryWidth+10,cow*BoundaryHeight+10));
 					panelediter.revalidate();
 					repaint();
+					if(s == null)
+						try {
+							s = new LedSocket();
+						} catch (UnknownHostException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="保存"){
 				}
@@ -288,6 +354,10 @@ public class Mapediter extends JFrame{
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="イベント"){
 					MapMode = 3;
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,127);
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="通過設定"){
@@ -296,9 +366,10 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,127);
+					
 					repaint();
 				}
-				
+
 
 			}
 		}
@@ -307,7 +378,7 @@ public class Mapediter extends JFrame{
 
 			public void mouseClicked(MouseEvent e) {
 				if(MapMode == 3 && e.getClickCount() == 2){
-					
+					mcm.MapChipManageEvent(e);
 				}
 
 			}
@@ -319,7 +390,7 @@ public class Mapediter extends JFrame{
 				MouseButtonX = e.getX();
 				MouseButtonY = e.getY();
 				repaint();
-				
+				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 			}
 
 
@@ -349,11 +420,12 @@ public class Mapediter extends JFrame{
 			public void mouseDragged(MouseEvent e) {
 				MouseButtonNowPointX = e.getX();
 				MouseButtonNowPointY = e.getY();
-				mcm.MapChipManageMapMouseDragged(e,MouseButtonForward,
+				/*mcm.MapChipManageMapMouseDragged(e,MouseButtonForward,
 						mapchip.MouseButtonX,mapchip.MouseButtonY,
-						mapchip.MouseButtonNowPointX,mapchip.MouseButtonNowPointY);
+						mapchip.MouseButtonNowPointX,mapchip.MouseButtonNowPointY);*/
+				mcm.MapChipManageMapMouseDragged(e, MouseButtonForward);
 				repaint();
-				
+				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 				
 			}
 
@@ -362,7 +434,7 @@ public class Mapediter extends JFrame{
 			public void mouseMoved(MouseEvent e) {
 				MouseButtonNowPointX = e.getX();
 				MouseButtonNowPointY = e.getY();
-				
+				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 			}
 
 		}
@@ -751,6 +823,165 @@ class MapDetail extends JDialog implements ActionListener{
 }
 
 
+class MapPass extends JDialog{
+	//ImageIcon mapchipicon = new ImageIcon(me.png); //タイトルイメージ読み込み
+	//ImageIcon mapchipicon = new ImageIcon(me.png);
+	Image mapchipimage = fileio.LoadImage(Mapediter.png);
+	MapDraw md = new MapDraw();
+	static int MouseButtonX = -1;//MousePush時のXの値がはいる
+	static int MouseButtonY = -1;//MousePush時のYの値がはいる
+	static int MouseButtonNowPointX = -1;//現在のマウスの位置X
+	static int MouseButtonNowPointY = -1;//現在のマウスの位置Y
+	static int MouseButtonAllOrOne = 0;//複数選択かどうかのフラグ
 
+	
+	
+	JPanel PanelMapChip = new JPanel()
+	{
+		 public void paintComponent(Graphics g)
+		 {
+			 //x,y座標獲得
+			 //System.out.println(getWidth());
+			 //System.out.println(getHeight());
+			/* g.drawImage(mapchipimage,0, 0,this);
+			 for(int i=0;i<800;i++){
+				 for(int j=0;j<206;j++){
+					 g.drawRect(i*me.BoundaryWidth, j*me.BoundaryHeight, me.BoundaryWidth, me.BoundaryHeight);
+				 }
+			 }*/
+			 md.MapChipshow(g, mapchipimage, Mapediter.BoundaryWidth, Mapediter.BoundaryHeight,
+					 Mapediter.MapChipPngWidth_MapChipSizeWidth,Mapediter.MapChipPngHeight_MapChipSizeHeight,this,
+					 Mapediter.MapChipNumder,MouseButtonX,MouseButtonY,
+					 MouseButtonNowPointX,MouseButtonNowPointY);
+
+		 }
+	};
+	
+	public MapPass(){
+		//マップチップの大きさを確認
+		Mapediter.MapChipPngWidth = mapchipimage.getWidth(this);
+		Mapediter.MapChipPngHeight = mapchipimage.getHeight(this);
+		Mapediter.MapChipPngWidth_MapChipSizeWidth = Mapediter.MapChipPngWidth/Mapediter.BoundaryWidth;
+		Mapediter.MapChipPngHeight_MapChipSizeHeight = Mapediter.MapChipPngHeight/Mapediter.BoundaryHeight;
+		
+		//マップチップ表示画面の最大の大きさ
+		//+18は適当
+		int PngWidthMax = Mapediter.MapChipPngWidth+18,PngHeightMax = Mapediter.MapChipPngHeight+18;
+		
+		setTitle("マップチップ");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		System.out.print(mapchipimage.getHeight(this));
+		//add
+		add(PanelMapChip, BorderLayout.CENTER);
+		PanelMapChip.addMouseListener(new mapchipMouseListener());
+		
+		JScrollPane mapchipscroll = new JScrollPane(PanelMapChip);
+		add(mapchipscroll);
+		//mapchipscroll.setPreferredSize(new Dimension(128,600));
+		
+		//マップチップ表示画面
+		if((Mapediter.DesktopHeight -100) < PngHeightMax)
+			PngHeightMax = Mapediter.DesktopHeight -100;
+		if((Mapediter.DesktopWidth -100) < PngWidthMax){
+			PngWidthMax = Mapediter.MapChipPngWidth -100;
+		}
+		
+		PanelMapChip.addMouseMotionListener(new MapChipMouseMotionListener());
+		
+		getContentPane().setPreferredSize(new Dimension(PngWidthMax,PngHeightMax));//パネルサイズ
+		
+		//JFrameSet(mapchipimage.getWidth(this)+2,mapchipimage.getWidth(this)+2);
+		//PanelMapChip.setPreferredSize(new Dimension(128,3300));
+		pack();
+		add(mapchipscroll);
+		//setSize(128,600);
+		setVisible(true);
+		PanelMapChip.setPreferredSize(new Dimension(mapchipimage.getWidth(this),mapchipimage.getHeight(this)));
+		PanelMapChip.revalidate();
+		repaint();
+		
+	}
+	
+	public void MapChipRepaint(){
+		repaint();
+	}
+	
+	public void JFrameSet(int SetWidth,int SetHeight){
+		getContentPane().setPreferredSize(new Dimension(SetWidth,SetHeight));
+		pack();
+	}
+	public void MapChipImageChange(){
+		
+	}
+	
+	public class mapchipMouseListener implements MouseListener {
+
+
+		public void mouseClicked(MouseEvent e) {
+
+			/*int MouseButtonX = -1;//MousePush時のXの値がはいる
+			int MouseButtonY = -1;//MousePush時のYの値がはいる
+			int MouseButtonNowPointX = -1;//現在のマウスの位置X
+			int MouseButtonNowPointY = -1;//現在のマウスの位置Y*/
+		}
+
+
+		public void mousePressed(MouseEvent e) {
+			int x,y,z;
+			x= e.getX();
+			y=e.getY();
+			z=e.getButton();
+			MouseButtonX = x;
+			MouseButtonY = y;
+			MouseButtonAllOrOne = 1;
+			
+			Mapediter.MapChipNumder =(x/Mapediter.BoundaryWidth)+(y/Mapediter.BoundaryHeight)*(Mapediter.MapChipPngWidth/Mapediter.BoundaryWidth);
+			repaint();
+
+		}
+
+
+		public void mouseReleased(MouseEvent e) {
+			MouseButtonX = -1000;
+			MouseButtonY = -1000;
+			MouseButtonNowPointX = -1000;//現在のマウスの位置X
+			MouseButtonNowPointY = -1000;//現在のマウスの位置Y
+			MouseButtonAllOrOne = 0;
+
+
+		}
+
+
+		public void mouseEntered(MouseEvent e) {
+
+
+		}
+
+	
+		public void mouseExited(MouseEvent e) {
+
+
+		}
+
+	}
+	
+	public class MapChipMouseMotionListener extends MouseMotionAdapter {
+
+
+		public void mouseDragged(MouseEvent e) {
+			MouseButtonNowPointX = e.getX();
+			MouseButtonNowPointY = e.getY();
+
+			
+			repaint();
+			
+			
+		}
+
+
+	}
+
+
+}
 
 

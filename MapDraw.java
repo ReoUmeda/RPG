@@ -66,23 +66,21 @@ public class MapDraw {
 						 arg[2] = arg[0] + BoundaryWidth;
 						 arg[3] = arg[1] + BoundaryHeight;
 						 
-						 
 						 g.drawImage(Mapediter.MapEditerImage3,arg[0],arg[1],
-								 arg[2],arg[3],
-								 (Mapediter.Map3[i][j]%tmp)*BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight,
-								 (Mapediter.Map3[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
-						 g.drawImage(Mapediter.MapEditerImage2,arg[0],arg[1],
-								 arg[2],arg[3],
-								 (Mapediter.Map2[i][j]%tmp)*BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight,
-								 (Mapediter.Map2[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
-						 g.drawImage(Mapediter.MapEditerImage,arg[0],arg[1],
-								 arg[2],arg[3],
-								 (Mapediter.Map[i][j]%tmp)*BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight,
-								 (Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+							arg[2],arg[3],
+							(Mapediter.Map3[i][j]%tmp)*BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight,
+							(Mapediter.Map3[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map3[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
 
-						 
-						 
-						 
+						g.drawImage(Mapediter.MapEditerImage2,arg[0],arg[1],
+							arg[2],arg[3],
+							(Mapediter.Map2[i][j]%tmp)*BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight,
+							(Mapediter.Map2[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map2[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+
+						g.drawImage(Mapediter.MapEditerImage,arg[0],arg[1],
+							arg[2],arg[3],
+							(Mapediter.Map[i][j]%tmp)*BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight,
+							(Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+					 
 						 
 						/* g.drawImage(Mapediter.MapEditerImage3,BoundaryWidth*i,BoundaryHeight*j,
 								 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
@@ -111,7 +109,7 @@ public class MapDraw {
 		 
 		 g.setColor(Color.red);
 		 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth, (MouseY/BoundaryHeight)*BoundaryHeight, BoundaryWidth, BoundaryHeight);
-		System.out.println(System.currentTimeMillis()-start);
+		//System.out.println(System.currentTimeMillis()-start);
 	}
 	
 	//ƒŒƒCƒ„[‚ğ‚Ç‚¤‚Ì‚±‚¤‚Ì‚·‚éêŠ
