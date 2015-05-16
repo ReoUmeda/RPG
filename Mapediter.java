@@ -58,7 +58,7 @@ public class Mapediter extends JFrame{
 	RePaintThread rpt = new RePaintThread();
 	Thread RPTThread = new Thread(rpt);
 	JScrollPane mapediterscroll;
-	
+	static final int DEDUG = 1;
 
 	
 	static int[][] Map;//レイヤー1 上
@@ -76,6 +76,8 @@ public class Mapediter extends JFrame{
 	static int MapChipPngHeight = -1; //マップチップの縦の長さ
 	static int MapChipPngWidth_MapChipSizeWidth = -1; //マップチップの横の長さ/マップチップ境界横
 	static int MapChipPngHeight_MapChipSizeHeight = -1; //マップチップの縦の長さ/マップチップ境界縦
+	static int widthWidht = 32/BoundaryWidth;
+	static int heightHeight =32/BoundaryHeight;
 	static String png=null;
 	final static int Width =800, Height = 600;
     int ewidth;
@@ -90,6 +92,9 @@ public class Mapediter extends JFrame{
 	static Image MapEditerImage4;//現在使用していない  マップチップの色を変更よう予定
 	static ImageIcon iconTmp = new ImageIcon("System/EV 32×32alfa.png");
 	static Image MapEditerImage5 = iconTmp.getImage();//Eventよう
+	static Image[] MapEditerImage6 = new Image[2];//通行設定よう  まる  ばつ
+	static ImageIcon iconTmp2 = new ImageIcon("System/batu3.png");
+	static Image MapEditerImage7 = iconTmp2.getImage();//通行設定よう  ばつ
 	
 	static java.awt.GraphicsEnvironment env = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
 	static java.awt.DisplayMode displayMode = env.getDefaultScreenDevice().getDisplayMode();
@@ -295,12 +300,21 @@ public class Mapediter extends JFrame{
 			RPTThread.start();
 			//rtc = rtc & 0xFF;
 			
+			//
+			MapEditerImage6[0] = ImageLoad("System/batu3.png");
+			MapEditerImage6[1] = ImageLoad("System/maru4.png");
 
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
 			getContentPane().setPreferredSize(new Dimension(SetWidth,SetHeight));
 			pack();
 		}
+		
+		public Image ImageLoad(String s){
+			ImageIcon imageIcon = new ImageIcon(s);
+			return imageIcon.getImage();
+		}
+		
 		public class MenuFileItemActionListener implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if(((JMenuItem)e.getSource()).getText()=="新規作成"){
@@ -354,18 +368,18 @@ public class Mapediter extends JFrame{
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="イベント"){
 					MapMode = 3;
-					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,0);
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="通過設定"){
 					MapMode = 4;
-					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
-					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,127);
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,0);
 					
 					repaint();
 				}
@@ -379,13 +393,19 @@ public class Mapediter extends JFrame{
 			public void mouseClicked(MouseEvent e) {
 				if(MapMode == 3 && e.getClickCount() == 2){
 					mcm.MapChipManageEvent(e);
+					//System.out.println(e.getClickCount());
+					
 				}
+				//System.out.println(e.getClickCount());
 
 			}
 
 
 			public void mousePressed(MouseEvent e) {
-				mcm.MapChipManageMapMousePressed(e);
+				if(MapMode < 3)
+					mcm.MapChipManageMapMousePressed(e);
+				else if(MapMode == 4)
+					mcm.MapChipManagePass(e);
 				MouseButtonForward = e.getButton();
 				MouseButtonX = e.getX();
 				MouseButtonY = e.getY();
@@ -423,7 +443,7 @@ public class Mapediter extends JFrame{
 				/*mcm.MapChipManageMapMouseDragged(e,MouseButtonForward,
 						mapchip.MouseButtonX,mapchip.MouseButtonY,
 						mapchip.MouseButtonNowPointX,mapchip.MouseButtonNowPointY);*/
-				mcm.MapChipManageMapMouseDragged(e, MouseButtonForward);
+				if(Mapediter.MapMode < 3)mcm.MapChipManageMapMouseDragged(e, MouseButtonForward);
 				repaint();
 				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 				
@@ -732,6 +752,7 @@ class mapdefinition extends JDialog implements ActionListener{
 					
 					Mapediter.mc = new mapchip();
 					setVisible(false);
+					MapPassEdit mpe = new MapPassEdit();
 				}
 				else JOptionPane.showMessageDialog(mapdefinition.this,"マップの大きさは1x1以上にしてください");
 			}catch (NumberFormatException ex){
@@ -739,6 +760,9 @@ class mapdefinition extends JDialog implements ActionListener{
                 textcow.setText("");
                 textrow.setText("");
 			}
+			
+			
+			
 		}
 		else if(((JButton)e.getSource()).getText()=="キャンセル") setVisible(false);
 		else if(((JButton)e.getSource()).getText()=="チップ境界"){
@@ -797,6 +821,8 @@ class MapDetail extends JDialog implements ActionListener{
 					//マップチップ境界変更
 					me.BoundaryHeight = Integer.parseInt(textBoundaryHeight.getText());
 					me.BoundaryWidth = Integer.parseInt(textBoundaryWidth.getText());
+					Mapediter.widthWidht =32/Mapediter.BoundaryWidth;
+					Mapediter.heightHeight = 32/Mapediter.BoundaryHeight;
 					//マップチップ境界保存
 					ArrayList<String> boundaryw = new ArrayList<String>();
 					boundaryw.add(Integer.toString(me.BoundaryHeight));

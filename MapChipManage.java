@@ -108,12 +108,43 @@ public class MapChipManage {
 		
 		if(Mapediter.Map4 != null) {
 			try{
-				Mapediter.Map4[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				Mapediter.Map4[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 1;
 			}
 			catch(ArrayIndexOutOfBoundsException e1){
 				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));
 			}
-			System.out.println(Mapediter.MapChipNumder);
+			//System.out.println(Mapediter.Map4[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight]+"aaa");
+			/*for(int i = 0;i<11;i++){
+				for(int j=0;j<11;j++){
+					System.out.print(Mapediter.Map4[i][j]);
+				}
+				//System.out.println("");
+			
+			}*/
+		}
+		
+		
+	}
+	public void MapChipManagePass(MouseEvent e) {
+		int x,y;
+		x= e.getX();
+		y=e.getY();
+		
+		if(Mapediter.Map5 != null) {
+			try{
+				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapPassNumder;
+			}
+			catch(ArrayIndexOutOfBoundsException e1){
+				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));
+			}
+			//System.out.println(Mapediter.Map4[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight]+"aaa");
+			/*for(int i = 0;i<11;i++){
+				for(int j=0;j<11;j++){
+					System.out.print(Mapediter.Map4[i][j]);
+				}
+				//System.out.println("");
+			
+			}*/
 		}
 		
 		
