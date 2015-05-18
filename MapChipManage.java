@@ -9,12 +9,18 @@ public class MapChipManage {
 		z=e.getButton();
 		if(Mapediter.Map != null && z == MouseEvent.BUTTON1) {
 			try{
+				
 				if(Mapediter.MapMode == 0)
 					Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 1)
 					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 2)
 					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				
+				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 
+					mapchip.MapChipPass[Mapediter.MapChipNumder%Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipNumder/Mapediter.MapChipPngWidth_MapChipSizeWidth];
+				
+				
 			}
 			catch(ArrayIndexOutOfBoundsException e1){
 				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));
@@ -46,6 +52,10 @@ public class MapChipManage {
 					
 				else if(Mapediter.MapMode == 2)
 					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+				
+				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 
+					mapchip.MapChipPass[Mapediter.MapChipNumder%Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipNumder/Mapediter.MapChipPngWidth_MapChipSizeWidth];
+				
 			}catch(ArrayIndexOutOfBoundsException e1){
 				//System.out.println(e1);
 			}

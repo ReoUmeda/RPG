@@ -116,9 +116,11 @@ public class MapDraw {
 					 					//元画像最初,元画像最初,
 					 					//元画像最後,元画像最後,null);
 						
+					 }
+					 if(Mapediter.MapMode == 3)
+						 showEvent2(g,i,j,arg,BoundaryWidth,BoundaryHeight);
 						if(Mapediter.MapMode == 4)
 							showPass2(g,i,j,arg,BoundaryWidth,BoundaryHeight);
-					 }
 				 }
 			 }
 			 
@@ -126,6 +128,7 @@ public class MapDraw {
 	 }
 		
 	}
+
 
 	//イベント用描画
 	public void showEvent(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int cowFirst,int rowFirst,int cow,int row){
@@ -167,6 +170,25 @@ public class MapDraw {
 	 }
 		
 	}
+	
+	private void showEvent2(Graphics g, int i, int j, int[] arg,
+			int BoundaryWidth, int BoundaryHeight) {
+		if(Mapediter.Map4[i][j] != -1){
+			
+			arg[0] = BoundaryWidth*i;
+			arg[1] = BoundaryHeight*j;
+			arg[2] = arg[0] + BoundaryWidth;
+			arg[3] = arg[1] + BoundaryHeight;
+			
+			g.drawImage(Mapediter.MapEditerImage5,arg[0],arg[1],
+					arg[2],arg[3],
+					0, 0,
+					(int)(BoundaryWidth*(32d/BoundaryWidth)), (int)(BoundaryHeight*(32d/BoundaryHeight)),null);
+		 }
+		
+	}
+	
+	
 	
 	//移動設定用
 	public void showPass(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int cowFirst,int rowFirst,int cow,int row){
@@ -214,12 +236,15 @@ public class MapDraw {
 	
 	private void showPass2(Graphics g, int i, int j, int[] arg, int BoundaryWidth,
 			int BoundaryHeight) {
-		 if(Mapediter.Map5[i][j] != -1){
-			 
-			 g.drawImage(Mapediter.MapEditerImage6[0],arg[0],arg[1],
-						arg[2],arg[3],
-						0, 0,
-						(int)(BoundaryWidth*(32d/BoundaryWidth)), (int)(BoundaryHeight*(32d/BoundaryHeight)),null);
+		if(Mapediter.Map5[i][j] != -1){
+			arg[0] = BoundaryWidth*i;
+			arg[1] = BoundaryHeight*j;
+			arg[2] = arg[0] + BoundaryWidth;
+			arg[3] = arg[1] + BoundaryHeight;
+			g.drawImage(Mapediter.MapEditerImage6[Mapediter.Map5[i][j]],arg[0],arg[1],
+					arg[2],arg[3],
+					0, 0,
+					(int)(BoundaryWidth*(32d/BoundaryWidth)), (int)(BoundaryHeight*(32d/BoundaryHeight)),null);
 		 }
 		
 	}
@@ -306,18 +331,29 @@ public class MapDraw {
 	
 	//なんかあれです
 	//マップチップのとこのやつ
-	public void MapChipshow(Graphics g, Image MapImage,int BoundaryWidth,int BoundaryHeight,int pngWidth,int pngHeight,ImageObserver ImageObserver,int MapChipNumber, int mouseButtonX, int mouseButtonY, int mouseButtonNowPointX, int mouseButtonNowPointY){
+	public void MapChipshow(Graphics g, Image MapImage,int BoundaryWidth,int BoundaryHeight,int pngWidth,int pngHeight,ImageObserver ImageObserver,int MapChipNumber, int mouseButtonX, int mouseButtonY, int mouseButtonNowPointX, int mouseButtonNowPointY,int[][] MapChipPass){
 		int rectX;//マップチップ選択範囲X
 		int rectY;//マップチップ選択範囲Y
+		double tmp = (double)pngWidth/(double)BoundaryWidth;
 		g.drawImage(MapImage,0, 0,ImageObserver);
 		 
 		 for(int i=0;i<pngWidth;i++){
 			 for(int j=0;j<pngHeight;j++){
 				 g.drawRect(i*BoundaryWidth, j*BoundaryHeight, BoundaryWidth, BoundaryHeight);
+				 if(Mapediter.MapMode == 4)
+					 if(MapChipPass[i][j] == 0)g.drawImage(MapPassEdit.MapEditerImage7,i*BoundaryWidth,j*BoundaryHeight,
+							 i*BoundaryWidth+BoundaryWidth,j*BoundaryHeight+BoundaryHeight,
+							 0, 0,
+							 32, 32,null);
+					 else if(MapChipPass[i][j] == 1)g.drawImage(MapPassEdit.MapEditerImage8,i*BoundaryWidth,j*BoundaryHeight,
+						 i*BoundaryWidth+BoundaryWidth,j*BoundaryHeight+BoundaryHeight,
+						 0, 0,
+						 32, 32,null);
 			 }
 		 }
 		 if(pngWidth == 0)
 			 pngWidth = 1;
+		 
 		 g.setColor(Color.red);
 		 g.drawRect((MapChipNumber%pngWidth)*BoundaryWidth, (MapChipNumber/pngWidth)*BoundaryHeight, BoundaryWidth, BoundaryHeight);
 		 //複数選択

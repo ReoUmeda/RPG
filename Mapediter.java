@@ -1,4 +1,6 @@
 //1G120080 梅田玲旺
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -22,6 +24,12 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
@@ -58,7 +66,7 @@ public class Mapediter extends JFrame{
 	RePaintThread rpt = new RePaintThread();
 	Thread RPTThread = new Thread(rpt);
 	JScrollPane mapediterscroll;
-	static final int DEDUG = 1;
+	static final int DEBUG = 1;
 
 	
 	static int[][] Map;//レイヤー1 上
@@ -76,6 +84,7 @@ public class Mapediter extends JFrame{
 	static int MapChipPngHeight = -1; //マップチップの縦の長さ
 	static int MapChipPngWidth_MapChipSizeWidth = -1; //マップチップの横の長さ/マップチップ境界横
 	static int MapChipPngHeight_MapChipSizeHeight = -1; //マップチップの縦の長さ/マップチップ境界縦
+	static int MapEventNumber = -1;
 	static int widthWidht = 32/BoundaryWidth;
 	static int heightHeight =32/BoundaryHeight;
 	static String png=null;
@@ -107,6 +116,8 @@ public class Mapediter extends JFrame{
 	int MouseButtonY = -1;//MousePush時のYの値がはいる
 	int MouseButtonNowPointX = -1;//現在のマウスの位置X
 	int MouseButtonNowPointY = -1;//現在のマウスの位置Y
+	
+	private Clip pong;
 	
 	
 	LedSocket s = null;//調光よう
@@ -240,9 +251,11 @@ public class Mapediter extends JFrame{
 			mapmake.add(layer);
 			layer.add(layeritem1);
 			layer.add(layeritem2);
-			layer.add(layeritem3);
-			layer.add(layeritem4);
-			layer.add(layeritem5);
+			if(DEBUG == 1){
+				layer.add(layeritem3);
+				layer.add(layeritem4);
+				layer.add(layeritem5);
+			}
 			
 			//リスナ登録
 			//ファイル
@@ -303,6 +316,34 @@ public class Mapediter extends JFrame{
 			//
 			MapEditerImage6[0] = ImageLoad("System/batu3.png");
 			MapEditerImage6[1] = ImageLoad("System/maru4.png");
+			File file = new File("BGM\\aa.wav");
+				AudioInputStream ais = null;
+				try {
+					ais = AudioSystem.getAudioInputStream(file);
+				} catch (UnsupportedAudioFileException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			try {
+				pong = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				((Clip) pong).open(ais);
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			pong.start();
+			
 
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
@@ -348,6 +389,7 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
+					mc.repaint();
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="レイヤー2"){
@@ -356,6 +398,7 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
+					mc.repaint();
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="レイヤー3"){
@@ -364,6 +407,7 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,127);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png);
+					mc.repaint();
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="イベント"){
@@ -372,6 +416,7 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,0);
+					mc.repaint();
 					repaint();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="通過設定"){
@@ -380,7 +425,7 @@ public class Mapediter extends JFrame{
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,0);
-					
+					mc.repaint();
 					repaint();
 				}
 
@@ -393,6 +438,8 @@ public class Mapediter extends JFrame{
 			public void mouseClicked(MouseEvent e) {
 				if(MapMode == 3 && e.getClickCount() == 2){
 					mcm.MapChipManageEvent(e);
+					MapEventNumber++;
+					MapEventEditDialog meed = new MapEventEditDialog(MapEventNumber);
 					//System.out.println(e.getClickCount());
 					
 				}
@@ -443,7 +490,10 @@ public class Mapediter extends JFrame{
 				/*mcm.MapChipManageMapMouseDragged(e,MouseButtonForward,
 						mapchip.MouseButtonX,mapchip.MouseButtonY,
 						mapchip.MouseButtonNowPointX,mapchip.MouseButtonNowPointY);*/
-				if(Mapediter.MapMode < 3)mcm.MapChipManageMapMouseDragged(e, MouseButtonForward);
+				if(Mapediter.MapMode < 3)
+					mcm.MapChipManageMapMouseDragged(e, MouseButtonForward);
+				else if(MapMode == 4)
+					mcm.MapChipManagePass(e);
 				repaint();
 				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 				
@@ -504,6 +554,7 @@ class mapchip extends JDialog{
 	static int MouseButtonNowPointX = -1;//現在のマウスの位置X
 	static int MouseButtonNowPointY = -1;//現在のマウスの位置Y
 	static int MouseButtonAllOrOne = 0;//複数選択かどうかのフラグ
+	static int[][] MapChipPass; 
 
 	
 	
@@ -523,7 +574,7 @@ class mapchip extends JDialog{
 			 md.MapChipshow(g, mapchipimage, Mapediter.BoundaryWidth, Mapediter.BoundaryHeight,
 					 Mapediter.MapChipPngWidth_MapChipSizeWidth,Mapediter.MapChipPngHeight_MapChipSizeHeight,this,
 					 Mapediter.MapChipNumder,MouseButtonX,MouseButtonY,
-					 MouseButtonNowPointX,MouseButtonNowPointY);
+					 MouseButtonNowPointX,MouseButtonNowPointY,MapChipPass);
 
 		 }
 	};
@@ -534,6 +585,8 @@ class mapchip extends JDialog{
 		Mapediter.MapChipPngHeight = mapchipimage.getHeight(this);
 		Mapediter.MapChipPngWidth_MapChipSizeWidth = Mapediter.MapChipPngWidth/Mapediter.BoundaryWidth;
 		Mapediter.MapChipPngHeight_MapChipSizeHeight = Mapediter.MapChipPngHeight/Mapediter.BoundaryHeight;
+		
+		MapChipPass = new int[Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipPngHeight_MapChipSizeHeight];
 		
 		//マップチップ表示画面の最大の大きさ
 		//+18は適当
@@ -607,6 +660,8 @@ class mapchip extends JDialog{
 			MouseButtonAllOrOne = 1;
 			
 			Mapediter.MapChipNumder =(x/Mapediter.BoundaryWidth)+(y/Mapediter.BoundaryHeight)*(Mapediter.MapChipPngWidth/Mapediter.BoundaryWidth);
+			if(Mapediter.MapMode == 4)
+				MapChipPass[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight]= Mapediter.MapPassNumder;
 			repaint();
 
 		}
@@ -642,7 +697,8 @@ class mapchip extends JDialog{
 		public void mouseDragged(MouseEvent e) {
 			MouseButtonNowPointX = e.getX();
 			MouseButtonNowPointY = e.getY();
-
+			if(Mapediter.MapMode == 4)
+				MapChipPass[MouseButtonNowPointX/Mapediter.BoundaryWidth][MouseButtonNowPointY/Mapediter.BoundaryHeight]= Mapediter.MapPassNumder;
 			
 			repaint();
 			
@@ -849,7 +905,7 @@ class MapDetail extends JDialog implements ActionListener{
 }
 
 
-class MapPass extends JDialog{
+/*class MapPass extends JDialog{
 	//ImageIcon mapchipicon = new ImageIcon(me.png); //タイトルイメージ読み込み
 	//ImageIcon mapchipicon = new ImageIcon(me.png);
 	Image mapchipimage = fileio.LoadImage(Mapediter.png);
@@ -869,12 +925,12 @@ class MapPass extends JDialog{
 			 //x,y座標獲得
 			 //System.out.println(getWidth());
 			 //System.out.println(getHeight());
-			/* g.drawImage(mapchipimage,0, 0,this);
-			 for(int i=0;i<800;i++){
-				 for(int j=0;j<206;j++){
-					 g.drawRect(i*me.BoundaryWidth, j*me.BoundaryHeight, me.BoundaryWidth, me.BoundaryHeight);
-				 }
-			 }*/
+			// g.drawImage(mapchipimage,0, 0,this);
+			// for(int i=0;i<800;i++){
+			//	 for(int j=0;j<206;j++){
+			//		 g.drawRect(i*me.BoundaryWidth, j*me.BoundaryHeight, me.BoundaryWidth, me.BoundaryHeight);
+			//	 }
+			// }
 			 md.MapChipshow(g, mapchipimage, Mapediter.BoundaryWidth, Mapediter.BoundaryHeight,
 					 Mapediter.MapChipPngWidth_MapChipSizeWidth,Mapediter.MapChipPngHeight_MapChipSizeHeight,this,
 					 Mapediter.MapChipNumder,MouseButtonX,MouseButtonY,
@@ -945,10 +1001,10 @@ class MapPass extends JDialog{
 
 		public void mouseClicked(MouseEvent e) {
 
-			/*int MouseButtonX = -1;//MousePush時のXの値がはいる
-			int MouseButtonY = -1;//MousePush時のYの値がはいる
-			int MouseButtonNowPointX = -1;//現在のマウスの位置X
-			int MouseButtonNowPointY = -1;//現在のマウスの位置Y*/
+			//int MouseButtonX = -1;//MousePush時のXの値がはいる
+			//int MouseButtonY = -1;//MousePush時のYの値がはいる
+			//int MouseButtonNowPointX = -1;//現在のマウスの位置X
+			//int MouseButtonNowPointY = -1;//現在のマウスの位置Y
 		}
 
 
@@ -1008,6 +1064,6 @@ class MapPass extends JDialog{
 	}
 
 
-}
+}*/
 
 
