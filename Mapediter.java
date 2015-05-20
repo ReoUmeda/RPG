@@ -417,7 +417,6 @@ public class Mapediter extends JFrame{
 		}
 		public class LayerItemActionListener implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(e.getSource());
 				if(((JMenuItem)e.getSource()).getText()=="ÉåÉCÉÑÅ[1"){
 					MapMode = 0;
 					Mapediter.MapEditerImage = fileio.LoadImage(png);

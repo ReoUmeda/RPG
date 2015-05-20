@@ -61,7 +61,7 @@ public class MapDraw {
 		else{
 			showNormal(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
 			 g.setColor(Color.red);
-			 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth*Mapediter.magnification, (MouseY/BoundaryHeight)*BoundaryHeight*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*Mapediter.magnification);
+			 g.drawRect((MouseX/(BoundaryWidth*Mapediter.magnification))*BoundaryWidth*Mapediter.magnification, (MouseY/(BoundaryHeight*Mapediter.magnification))*BoundaryHeight*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*Mapediter.magnification);
 		}
 			
 		/*else if(Mapediter.MapMode == 3)

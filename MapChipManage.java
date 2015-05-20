@@ -7,17 +7,19 @@ public class MapChipManage {
 		x= e.getX();
 		y=e.getY();
 		z=e.getButton();
+		int BoundaryWidth = Mapediter.BoundaryWidth*Mapediter.magnification;
+		int BoundaryHeight = Mapediter.BoundaryHeight*Mapediter.magnification;
 		if(Mapediter.Map != null && z == MouseEvent.BUTTON1) {
 			try{
 				
 				if(Mapediter.MapMode == 0)
-					Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 1)
-					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map2[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 2)
-					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map3[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				
-				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 
+				Mapediter.Map5[x/BoundaryWidth][y/BoundaryHeight] = 
 					mapchip.MapChipPass[Mapediter.MapChipNumder%Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipNumder/Mapediter.MapChipPngWidth_MapChipSizeWidth];
 				
 				
@@ -47,12 +49,12 @@ public class MapChipManage {
 		if(Mapediter.Map != null && MouseButtonForward == MouseEvent.BUTTON1) {
 			try{
 				if(Mapediter.MapMode == 0)
-					Mapediter.Map[x/(Mapediter.BoundaryWidth*Mapediter.magnification)][y/(Mapediter.BoundaryHeight*Mapediter.magnification)] = Mapediter.MapChipNumder;
+					Mapediter.Map[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 1)
-					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map2[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 					
 				else if(Mapediter.MapMode == 2)
-					Mapediter.Map3[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map3[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				
 				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 
 					mapchip.MapChipPass[Mapediter.MapChipNumder%Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipNumder/Mapediter.MapChipPngWidth_MapChipSizeWidth];
