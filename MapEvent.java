@@ -1,4 +1,5 @@
 import java.awt.Image;
+import java.util.ArrayList;
 
 
 public class MapEvent{
@@ -8,11 +9,17 @@ public class MapEvent{
 	private int y;
 	private double[] free = new double[Common.freeVariableMax];
 	private int MapPassNumber;
+	private int MapMoveProbability;//移動確立0～100まで
+	private int direction;//向いている方向
+	private ArrayList<Byte> walkRoadPath = new ArrayList<Byte>();//移動軌跡
+	private int LRcount = 0;//左右どちらのほうに歩くてきな
 	
 	public MapEvent(){
 		image = ImageLoadClass.ImageLoad("");
 		MapEventNumber = -1;
 		MapPassNumber = 0;
+		MapMoveProbability = 0;
+		direction = Common.DOWN;
 	}
 	public MapEvent(int num){
 		super();
@@ -87,20 +94,24 @@ public class MapEvent{
 	 * 位置を変更
 	 */
 	public void SetXCoordinate(int tmp){
+		x = tmp;
 		if(tmp < 0)
-			x = tmp;
+			x = 0;
 		
 	}
 	public void SetYCoordinate(int tmp){
+		y = tmp;
 		if(tmp < 0)
-			y = tmp;
+			y = 0;
 		
 	}
 	public void SetXYCoordinate(int[] tmp){
-		if(tmp[0] < 0)
-			x = tmp[0];
+		x = tmp[0];
 		if(tmp[1] < 0)
-			y = tmp[1];
+			x = 0;
+		y = tmp[1];
+		if(tmp[1] < 0)
+			y = 0;
 		
 	}
 	
@@ -108,21 +119,22 @@ public class MapEvent{
 	 * 現在の位置に足す
 	 */
 	public void AddXCoordinate(int tmp){
-		if(x+tmp < 0)
-			x = x + tmp;
-		
+		x += tmp;
+		if(x < 0)
+			x = 0;
 	}
 	public void AddYCoordinate(int tmp){
-		if(y+tmp < 0)
-			y = y + tmp;
-		
+		y += tmp;
+		if(y < 0)
+			y = 0;
 	}
 	public void AddXYCoordinate(int[] tmp){
-		if(x+tmp[0] < 0)
-			x = x + tmp[0];
-		if(y+tmp[1] < 0)
-			y = y + tmp[1];
-		
+		x += tmp[0];
+		if(x < 0)
+			x = 0;
+		y += tmp[1];
+		if(y < 0)
+			y = 0;
 	}
 	
 	/*
@@ -173,6 +185,90 @@ public class MapEvent{
 	public void SetMapPassNumber(int pass){
 		MapPassNumber = pass;
 	}
+	/*
+	 * バグ発生の原因となる可能性がある
+	 */
+	public void setAllMapMoveProbability(int mapMoveProbability) {
+		MapMoveProbability = mapMoveProbability;
+	}
+	public void setMapMoveProbability(int mapMoveProbability) {
+		MapMoveProbability = mapMoveProbability;
+		if(MapMoveProbability < 0){
+			MapMoveProbability = 0;
+		}
+		else if(MapMoveProbability > 100){
+			MapMoveProbability = 100;
+		}
+	}
+	public int getMapMoveProbability() {
+		return MapMoveProbability;
+	}
+	public void setDirection(int direction) {
+		this.direction = direction;
+		if(direction > Common.Max){
+			direction = Common.DOWN;
+		}
+		
+	}
+	public int getDirection() {
+		return direction;
+	}
 	
+	
+	public void Move(int direction){
+		setDirection(direction);
+		switch(direction){
+		case Common.UP:
+			if(isHit(x,y-1)){
+				AddYCoordinate(-1);
+			}
+			break;
+		case Common.DOWN:
+			if(isHit(x,y+1)){
+				AddYCoordinate(1);
+			}
+			break;
+		case Common.LEFT:
+			if(isHit(x-1,y)){
+				AddXCoordinate(-1);
+			}
+			break;
+		case Common.RIGHT:
+			if(isHit(x+1,y)){
+				AddXCoordinate(1);
+			}
+			break;
+		}
+
+	}
+	//通行可能かどうかの判定
+	public boolean isHit(int xx,int yy){
+		boolean ret = true;
+		if(xx < 0 || yy < 0 || xx >= Mapediter.row || yy >= Mapediter.cow)
+			ret = false;
+		else if(Mapediter.Map5[xx][yy] == 0)
+			ret = false;
+		if(MapEventNumber == 0 && ret == false){
+			Mapediter.bgmse.start(0);
+		}
+		return ret;
+	}
+	public void setWalkRoadPath(int num) {
+		if(num < Common.Max)
+			this.walkRoadPath.add((byte) num);
+	}
+	public void setWalkRoadPath(int setnum,int num) {
+		if(num < Common.Max)
+			this.walkRoadPath.add(setnum,(byte) num);
+	}
+	public ArrayList<Byte> getWalkRoadPath(int num) {
+		return walkRoadPath;
+	}
+	public Byte getWalkRoadPath2(int num) {
+		return walkRoadPath.get(num);
+	}
+	public int getLRcount() {
+		return LRcount;
+	}
 
 }

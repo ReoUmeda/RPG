@@ -260,7 +260,7 @@ public class LedSocket extends Socket {
 	    }
 	    s.send(10,10,10,10);
 	    s.send(1, 1, 1, 1);
-	    s.send(0, 0, 0, 0);
+	    s.send(1000, 0, 0, 0);
 	    System.out.println();
 	   /* try {
 		Thread.sleep(1000);

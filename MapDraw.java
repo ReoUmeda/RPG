@@ -55,14 +55,21 @@ public class MapDraw {
 		//g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
 
 		//if(Mapediter.MapMode <3)
+		if(Mapediter.MapMode == 5){
+			showGame(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
+		}
+		else{
 			showNormal(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
+			 g.setColor(Color.red);
+			 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth*Mapediter.magnification, (MouseY/BoundaryHeight)*BoundaryHeight*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*Mapediter.magnification);
+		}
+			
 		/*else if(Mapediter.MapMode == 3)
 			showEvent(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
 		else if(Mapediter.MapMode == 4)
 			showPass(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);*/
 		 
-		 g.setColor(Color.red);
-		 g.drawRect((MouseX/BoundaryWidth)*BoundaryWidth, (MouseY/BoundaryHeight)*BoundaryHeight, BoundaryWidth, BoundaryHeight);
+
 		//System.out.println(System.currentTimeMillis()-start);
 	}
 	
@@ -70,17 +77,18 @@ public class MapDraw {
 	public void showNormal(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int cowFirst,int rowFirst,int cow,int row){
 		int[] arg = new int[4];
 		double tmp = (int)((double)pngWidth/(double)BoundaryWidth);
+
 		try{
 			 for(int i=rowFirst;i<row;i++){
 				 for(int j=cowFirst;j<cow;j++){
 					 if(map[i][j] == -1) 
-						 g.drawRect(i*BoundaryWidth, j*BoundaryHeight, BoundaryWidth, BoundaryHeight);
+						 g.drawRect(i*BoundaryWidth*Mapediter.magnification, j*BoundaryHeight*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*Mapediter.magnification);
 					 else {
 						 
-						 arg[0] = BoundaryWidth*i;
-						 arg[1] = BoundaryHeight*j;
-						 arg[2] = arg[0] + BoundaryWidth;
-						 arg[3] = arg[1] + BoundaryHeight;
+						 arg[0] = BoundaryWidth*i*Mapediter.magnification;
+						 arg[1] = BoundaryHeight*j*Mapediter.magnification;
+						 arg[2] = arg[0] + BoundaryWidth*Mapediter.magnification;
+						 arg[3] = arg[1] + BoundaryHeight*Mapediter.magnification;
 						 
 						 g.drawImage(Mapediter.MapEditerImage3,arg[0],arg[1],
 							arg[2],arg[3],
@@ -96,8 +104,9 @@ public class MapDraw {
 							arg[2],arg[3],
 							(int)(Mapediter.Map[i][j]%tmp)*BoundaryWidth, (int)(Mapediter.Map[i][j]/tmp)*BoundaryHeight,
 							(int)(Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (int)(Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
-					 
-						 
+
+						
+						
 						/* g.drawImage(Mapediter.MapEditerImage3,BoundaryWidth*i,BoundaryHeight*j,
 								 BoundaryWidth*i+BoundaryWidth,BoundaryHeight*j+BoundaryHeight,
 								 (Mapediter.Map3[i][j]%(pngWidth/BoundaryWidth))*BoundaryWidth, (Mapediter.Map3[i][j]/(pngWidth/BoundaryWidth))*BoundaryHeight,
@@ -119,10 +128,60 @@ public class MapDraw {
 					 }
 					 if(Mapediter.MapMode == 3)
 						 showEvent2(g,i,j,arg,BoundaryWidth,BoundaryHeight);
-						if(Mapediter.MapMode == 4)
-							showPass2(g,i,j,arg,BoundaryWidth,BoundaryHeight);
+					if(Mapediter.MapMode == 4)
+						showPass2(g,i,j,arg,BoundaryWidth,BoundaryHeight);
+
 				 }
 			 }
+			 //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+Mapediter.MapMode);
+
+			 
+		 }catch(NullPointerException e){
+	 }
+		
+	}
+	
+	
+	//Game時
+	public void showGame(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int cowFirst,int rowFirst,int cow,int row){
+		int[] arg = new int[4];
+		double tmp = (int)((double)pngWidth/(double)BoundaryWidth);
+
+		try{
+			 for(int i=rowFirst;i<row;i++){
+				 for(int j=cowFirst;j<cow;j++){
+					 if(map[i][j] == -1) 
+						 g.drawRect(i*BoundaryWidth*Mapediter.magnification, (j*BoundaryHeight+BoundaryHeight)*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*2*Mapediter.magnification);
+					 if(map[i][j] != -1){
+						 
+						 arg[0] = BoundaryWidth*i*Mapediter.magnification;
+						 arg[1] = (BoundaryHeight*j+BoundaryHeight)*Mapediter.magnification;
+						 arg[2] = arg[0] + BoundaryWidth*Mapediter.magnification;
+						 arg[3] = arg[1] + BoundaryHeight*Mapediter.magnification;
+						 
+						 g.drawImage(Mapediter.MapEditerImage3,arg[0],arg[1],
+							arg[2],arg[3],
+							(int)(Mapediter.Map3[i][j]%tmp)*BoundaryWidth, (int)(Mapediter.Map3[i][j]/tmp)*BoundaryHeight,
+							(int)(Mapediter.Map3[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (int)(Mapediter.Map3[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+
+						g.drawImage(Mapediter.MapEditerImage2,arg[0],arg[1],
+							arg[2],arg[3],
+							(int)(Mapediter.Map2[i][j]%tmp)*BoundaryWidth, (int)(Mapediter.Map2[i][j]/tmp)*BoundaryHeight,
+							(int)(Mapediter.Map2[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (int)(Mapediter.Map2[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+
+						g.drawImage(Mapediter.MapEditerImage,arg[0],arg[1],
+							arg[2],arg[3],
+							(int)(Mapediter.Map[i][j]%tmp)*BoundaryWidth, (int)(Mapediter.Map[i][j]/tmp)*BoundaryHeight,
+							(int)(Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (int)(Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
+						
+					 }
+
+
+				 }
+			 }
+			 //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+Mapediter.MapMode);
+				if(Mapediter.MapMode == 5)
+					showGame(g,BoundaryWidth,BoundaryHeight);
 			 
 		 }catch(NullPointerException e){
 	 }
@@ -130,6 +189,14 @@ public class MapDraw {
 	}
 
 
+	private void showGame(Graphics g, int BoundaryWidth, int BoundaryHeight) {
+		g.drawImage(Mapediter.me.GetImage(),BoundaryWidth*Mapediter.me.GetXCoordinate()*Mapediter.magnification,BoundaryHeight*Mapediter.me.GetYCoordinate()*Mapediter.magnification,
+				(BoundaryWidth*Mapediter.me.GetXCoordinate()+BoundaryWidth)*Mapediter.magnification,(BoundaryHeight*Mapediter.me.GetYCoordinate()+BoundaryHeight*2)*Mapediter.magnification,
+				0, Mapediter.me.getDirection()*BoundaryHeight*2,
+				BoundaryWidth, Mapediter.me.getDirection()*BoundaryHeight*2 + BoundaryHeight*2,null);
+		
+		
+	}
 	//イベント用描画
 	public void showEvent(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int cowFirst,int rowFirst,int cow,int row){
 		int[] arg = new int[4];
@@ -175,10 +242,10 @@ public class MapDraw {
 			int BoundaryWidth, int BoundaryHeight) {
 		if(Mapediter.Map4[i][j] != -1){
 			
-			arg[0] = BoundaryWidth*i;
-			arg[1] = BoundaryHeight*j;
-			arg[2] = arg[0] + BoundaryWidth;
-			arg[3] = arg[1] + BoundaryHeight;
+			arg[0] = BoundaryWidth*i*Mapediter.magnification;
+			arg[1] = BoundaryHeight*j*Mapediter.magnification;
+			arg[2] = arg[0] + BoundaryWidth*Mapediter.magnification;
+			arg[3] = arg[1] + BoundaryHeight*Mapediter.magnification;
 			
 			g.drawImage(Mapediter.MapEditerImage5,arg[0],arg[1],
 					arg[2],arg[3],
@@ -237,10 +304,10 @@ public class MapDraw {
 	private void showPass2(Graphics g, int i, int j, int[] arg, int BoundaryWidth,
 			int BoundaryHeight) {
 		if(Mapediter.Map5[i][j] != -1){
-			arg[0] = BoundaryWidth*i;
-			arg[1] = BoundaryHeight*j;
-			arg[2] = arg[0] + BoundaryWidth;
-			arg[3] = arg[1] + BoundaryHeight;
+			arg[0] = BoundaryWidth*i*Mapediter.magnification;
+			arg[1] = BoundaryHeight*j*Mapediter.magnification;
+			arg[2] = arg[0] + BoundaryWidth*Mapediter.magnification;
+			arg[3] = arg[1] + BoundaryHeight*Mapediter.magnification;
 			g.drawImage(Mapediter.MapEditerImage6[Mapediter.Map5[i][j]],arg[0],arg[1],
 					arg[2],arg[3],
 					0, 0,
@@ -392,7 +459,7 @@ public class MapDraw {
 		
 	}
 	
-	//透明度の変更jiiiiii
+	//透明度の変更
 	//changeImageに透明度を変えたい画像
 	//transparencyに透明度(0から255)
 	public static void changeTransparent(BufferedImage changeImage,int R,int G,int B,int A){
@@ -405,6 +472,10 @@ public class MapDraw {
 		
 		
 	}
+	
+	
+	
+	
 
 	
 }

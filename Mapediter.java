@@ -1,15 +1,20 @@
 //1G120080 梅田玲旺
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
@@ -93,6 +98,8 @@ public class Mapediter extends JFrame{
     int eheight;
     MapDraw md = new MapDraw();
     MapChipManage mcm = new MapChipManage();
+    static BGMClass bgmc = new BGMClass();
+    static BGMClass bgmse = new BGMClass();
     static BufferedImage MapEditerBuffer;
 	static ImageIcon MapEditerIcon;
 	static Image MapEditerImage;
@@ -117,7 +124,9 @@ public class Mapediter extends JFrame{
 	int MouseButtonNowPointX = -1;//現在のマウスの位置X
 	int MouseButtonNowPointY = -1;//現在のマウスの位置Y
 	
-	private Clip pong;
+	static Clip pong;
+	static MapEvent me;
+	final static int magnification = 4;
 	
 	
 	LedSocket s = null;//調光よう
@@ -128,6 +137,7 @@ public class Mapediter extends JFrame{
 		 public void paintComponent(Graphics g)
 		 {
 			
+			 
 
 
 			 //x,y座標獲得
@@ -149,7 +159,17 @@ public class Mapediter extends JFrame{
 					 getContentPane().getWidth(),getContentPane().getHeight(),
 					 row,cow,MouseButtonNowPointX,MouseButtonNowPointY);
 
-
+				/*Graphics2D g2 = (Graphics2D) g;
+				AlphaComposite composite = AlphaComposite.getInstance(
+		                AlphaComposite.SRC_OVER, 0.5f);
+				
+				g2.setComposite(composite);
+				g2.setColor(Color.red);
+				g2.fillRect(0, 0, 1000, 1000);
+				g2.setComposite(AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 1));*/
+			 
+			 
 		 }
 	};
 	  public static void main(String args[]){
@@ -229,12 +249,14 @@ public class Mapediter extends JFrame{
 			JCheckBoxMenuItem layeritem3 = new JCheckBoxMenuItem("レイヤー3");
 			JCheckBoxMenuItem layeritem4 = new JCheckBoxMenuItem("イベント");
 			JCheckBoxMenuItem layeritem5 = new JCheckBoxMenuItem("通過設定");
+			JCheckBoxMenuItem layeritem6 = new JCheckBoxMenuItem("起動");
 			ButtonGroup layerGroup = new ButtonGroup();
 			layerGroup.add(layeritem1);
 			layerGroup.add(layeritem2);
 			layerGroup.add(layeritem3);
 			layerGroup.add(layeritem4);
 			layerGroup.add(layeritem5);
+			layerGroup.add(layeritem6);
 			layeritem1.setSelected(true);
 			
 			
@@ -255,6 +277,7 @@ public class Mapediter extends JFrame{
 				layer.add(layeritem3);
 				layer.add(layeritem4);
 				layer.add(layeritem5);
+				layer.add(layeritem6);
 			}
 			
 			//リスナ登録
@@ -268,7 +291,7 @@ public class Mapediter extends JFrame{
 			layeritem3.addActionListener(new LayerItemActionListener());
 			layeritem4.addActionListener(new LayerItemActionListener());
 			layeritem5.addActionListener(new LayerItemActionListener());
-			
+			layeritem6.addActionListener(new LayerItemActionListener());
 
 			
             //フレームの設定
@@ -278,6 +301,7 @@ public class Mapediter extends JFrame{
 			addWindowListener(new MyWindowListenerb());
 			panelediter.addMouseListener(new MapediterMouseListener());
 			panelediter.addMouseMotionListener(new MapediterMouseMotionListener());
+			addKeyListener(new MapedierKeyListener());
 			setSize(800, 600);
 			
 			//フレームサイズ
@@ -316,7 +340,7 @@ public class Mapediter extends JFrame{
 			//
 			MapEditerImage6[0] = ImageLoad("System/batu3.png");
 			MapEditerImage6[1] = ImageLoad("System/maru4.png");
-			File file = new File("BGM\\aa.wav");
+			/*File file = new File("BGM\\aa.wav");
 				AudioInputStream ais = null;
 				try {
 					ais = AudioSystem.getAudioInputStream(file);
@@ -341,9 +365,19 @@ public class Mapediter extends JFrame{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			pong.start();
-			
+			}*/
+			//pong.start();
+			//Clip art;
+			//bgmc.soundLoad("aa.wav",1);
+			//bgmc.soundLoad("37_貫け!わがままメドレー.wav",1);
+			//art.start();
+			//bgmc.start(0);
+			bgmc.soundLoad("BGM\\BGM000.wav",1);
+			bgmc.start(0);
+			bgmse.soundLoad("se\\se00.wav", 0);
+			//bgmc.start(1);
+			//bgmc.start(0);
+			me = new MapEvent(0,0,1,1,"image\\Mapevent\\0000.png");
 
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
@@ -383,6 +417,7 @@ public class Mapediter extends JFrame{
 		}
 		public class LayerItemActionListener implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println(e.getSource());
 				if(((JMenuItem)e.getSource()).getText()=="レイヤー1"){
 					MapMode = 0;
 					Mapediter.MapEditerImage = fileio.LoadImage(png);
@@ -421,6 +456,16 @@ public class Mapediter extends JFrame{
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="通過設定"){
 					MapMode = 4;
+					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
+					Mapediter.MapEditerImage4 = fileio.LoadImage(png,255,255,255,0);
+					mc.repaint();
+					repaint();
+				}
+				
+				else if(((JMenuItem)e.getSource()).getText()=="起動"){
+					MapMode = 5;
 					Mapediter.MapEditerImage = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage2 = fileio.LoadImage(png,255,255,255,0);
 					Mapediter.MapEditerImage3 = fileio.LoadImage(png,255,255,255,0);
@@ -507,6 +552,45 @@ public class Mapediter extends JFrame{
 				//s.send(rnd.nextInt(30),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001),rnd.nextInt(1001));
 			}
 
+		}
+		
+		public class MapedierKeyListener implements KeyListener{
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				if(MapMode == 5){
+					switch(arg0.getKeyCode()){
+					case KeyEvent.VK_UP:
+						me.Move(Common.UP);
+						break;
+					case KeyEvent.VK_DOWN:
+						me.Move(Common.DOWN);
+						break;
+					case KeyEvent.VK_LEFT:
+						me.Move(Common.LEFT);
+						break;
+					case KeyEvent.VK_RIGHT:
+						me.Move(Common.RIGHT);
+						break;
+					}
+					System.out.println("x:"+me.GetXCoordinate()+" y:"+me.GetYCoordinate());
+					//me.Move(direction);
+				}
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		}
 		
 		//repaintでっす

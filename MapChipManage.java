@@ -42,11 +42,12 @@ public class MapChipManage {
 		int x,y,z;
 		x= e.getX();
 		y=e.getY();
-
+		int BoundaryWidth = Mapediter.BoundaryWidth*Mapediter.magnification;
+		int BoundaryHeight = Mapediter.BoundaryHeight*Mapediter.magnification;
 		if(Mapediter.Map != null && MouseButtonForward == MouseEvent.BUTTON1) {
 			try{
 				if(Mapediter.MapMode == 0)
-					Mapediter.Map[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
+					Mapediter.Map[x/(Mapediter.BoundaryWidth*Mapediter.magnification)][y/(Mapediter.BoundaryHeight*Mapediter.magnification)] = Mapediter.MapChipNumder;
 				else if(Mapediter.MapMode == 1)
 					Mapediter.Map2[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapChipNumder;
 					
