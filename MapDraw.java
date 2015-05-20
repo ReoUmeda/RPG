@@ -34,11 +34,11 @@ public class MapDraw {
 	//スクロールする新型
 	public void show(Graphics g, Image MapImage, int[][] map,int BoundaryWidth,int BoundaryHeight,int pngWidth,int scrollX,int scrollY,int panelX,int panelY,int MaxX,int MaxY,int MouseX,int MouseY) {
 		//描画する始めの場所(左上?)
-		int cowFirst = scrollY/BoundaryHeight;
-		int rowFirst = scrollX/BoundaryWidth;
+		int cowFirst = (int)((double)scrollY/(double)(BoundaryHeight*Mapediter.magnification));
+		int rowFirst = (int)((double)scrollX/(double)(BoundaryWidth*Mapediter.magnification));
 		//描画する終わり(右下?)
-		int cow = (panelY/BoundaryHeight) + cowFirst;
-		int row = (panelX/BoundaryWidth) + rowFirst;
+		int cow = (int)((double)panelY/(double)(BoundaryHeight*Mapediter.magnification)) + cowFirst;
+		int row = (int)((double)panelX/(double)(BoundaryWidth*Mapediter.magnification)) + rowFirst;
 		//エラー用(はみ出てるとこ)
 		if(MaxY < cow)
 			cow = MaxY;
@@ -190,10 +190,10 @@ public class MapDraw {
 
 
 	private void showGame(Graphics g, int BoundaryWidth, int BoundaryHeight) {
-		g.drawImage(Mapediter.me.GetImage(),BoundaryWidth*Mapediter.me.GetXCoordinate()*Mapediter.magnification,BoundaryHeight*Mapediter.me.GetYCoordinate()*Mapediter.magnification,
-				(BoundaryWidth*Mapediter.me.GetXCoordinate()+BoundaryWidth)*Mapediter.magnification,(BoundaryHeight*Mapediter.me.GetYCoordinate()+BoundaryHeight*2)*Mapediter.magnification,
-				0, Mapediter.me.getDirection()*BoundaryHeight*2,
-				BoundaryWidth, Mapediter.me.getDirection()*BoundaryHeight*2 + BoundaryHeight*2,null);
+		g.drawImage(Mapediter.me.GetImage(),BoundaryWidth*Mapediter.me.GetXCoordinate()*Mapediter.magnification + Mapediter.me.getPx(),BoundaryHeight*Mapediter.me.GetYCoordinate()*Mapediter.magnification + Mapediter.me.getPy(),
+				(BoundaryWidth*Mapediter.me.GetXCoordinate()+BoundaryWidth)*Mapediter.magnification + Mapediter.me.getPx(),(BoundaryHeight*Mapediter.me.GetYCoordinate()+BoundaryHeight*2)*Mapediter.magnification + Mapediter.me.getPy(),
+				Mapediter.me.getLRcount()*BoundaryWidth, Mapediter.me.getDirection()*BoundaryHeight*2,
+				Mapediter.me.getLRcount()*BoundaryWidth+BoundaryWidth, Mapediter.me.getDirection()*BoundaryHeight*2 + BoundaryHeight*2,null);
 		
 		
 	}

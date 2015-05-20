@@ -56,7 +56,7 @@ public class MapChipManage {
 				else if(Mapediter.MapMode == 2)
 					Mapediter.Map3[x/BoundaryWidth][y/BoundaryHeight] = Mapediter.MapChipNumder;
 				
-				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 
+				Mapediter.Map5[x/BoundaryWidth][y/BoundaryHeight] = 
 					mapchip.MapChipPass[Mapediter.MapChipNumder%Mapediter.MapChipPngWidth_MapChipSizeWidth][Mapediter.MapChipNumder/Mapediter.MapChipPngWidth_MapChipSizeWidth];
 				
 			}catch(ArrayIndexOutOfBoundsException e1){
@@ -119,9 +119,10 @@ public class MapChipManage {
 		x= e.getX();
 		y=e.getY();
 		
+		
 		if(Mapediter.Map4 != null) {
 			try{
-				Mapediter.Map4[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = 1;
+				Mapediter.Map4[x/(Mapediter.BoundaryWidth*Mapediter.magnification)][y/(Mapediter.BoundaryHeight*Mapediter.magnification)] = 1;
 			}
 			catch(ArrayIndexOutOfBoundsException e1){
 				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));
@@ -145,7 +146,7 @@ public class MapChipManage {
 		
 		if(Mapediter.Map5 != null) {
 			try{
-				Mapediter.Map5[x/Mapediter.BoundaryWidth][y/Mapediter.BoundaryHeight] = Mapediter.MapPassNumder;
+				Mapediter.Map5[x/(Mapediter.BoundaryWidth*Mapediter.magnification)][y/(Mapediter.BoundaryHeight*Mapediter.magnification)] = Mapediter.MapPassNumder;
 			}
 			catch(ArrayIndexOutOfBoundsException e1){
 				System.out.println("x:"+x/Mapediter.BoundaryWidth+" y:"+(y/Mapediter.BoundaryHeight));

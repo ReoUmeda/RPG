@@ -93,7 +93,7 @@ public class Mapediter extends JFrame{
 	static int widthWidht = 32/BoundaryWidth;
 	static int heightHeight =32/BoundaryHeight;
 	static String png=null;
-	final static int Width =800, Height = 600;
+	final static int Width =802, Height = 602;
     int ewidth;
     int eheight;
     MapDraw md = new MapDraw();
@@ -127,8 +127,19 @@ public class Mapediter extends JFrame{
 	static Clip pong;
 	static MapEvent me;
 	final static int magnification = 4;
+    private ActionKey leftKey = new ActionKey();
+    private ActionKey rightKey = new ActionKey();
+    private ActionKey upKey = new ActionKey();
+    private ActionKey downKey = new ActionKey();
 	
+    
+    static int offsetX = 0;
+    static int offsetY = 0;
+    
+    static int Jfreamx = 0;
+    static int Jframey = 0;
 	
+    
 	LedSocket s = null;//í≤åıÇÊÇ§
 	Random rnd = new Random();
 	
@@ -141,8 +152,15 @@ public class Mapediter extends JFrame{
 
 
 			 //x,yç¿ïWälìæ
-			 ewidth = getWidth();
+			 /*ewidth = getWidth();
 			 eheight = getHeight();
+			 System.out.println(ewidth+"aaaaa  "+eheight);*/
+			 	
+				 offsetX = (ewidth/2) - me.GetXCoordinate();
+				 offsetX = Math.min(offsetX, 0);
+				 offsetX = Math.max(offsetX,ewidth - getWidth());
+				 offsetY = (eheight/2) - me.GetYCoordinate();
+				 
 			// System.out.println(ewidth);
 			 //System.out.println(eheight);
 			 //System.out.println(getContentPane().getHeight());
@@ -334,7 +352,7 @@ public class Mapediter extends JFrame{
 			boundaryR.clear();
 			
 
-			RPTThread.start();
+			
 			//rtc = rtc & 0xFF;
 			
 			//
@@ -378,7 +396,9 @@ public class Mapediter extends JFrame{
 			//bgmc.start(1);
 			//bgmc.start(0);
 			me = new MapEvent(0,0,1,1,"image\\Mapevent\\0000.png");
-
+			ewidth = panelediter.getWidth();
+			eheight = panelediter.getHeight();
+			RPTThread.start();
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
 			getContentPane().setPreferredSize(new Dimension(SetWidth,SetHeight));
@@ -394,7 +414,8 @@ public class Mapediter extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if(((JMenuItem)e.getSource()).getText()=="êVãKçÏê¨"){
 					mapdefinition mc = new mapdefinition();
-					panelediter.setPreferredSize(new Dimension(row*BoundaryWidth+10,cow*BoundaryHeight+10));
+					panelediter.setPreferredSize(new Dimension(row*BoundaryWidth*magnification+BoundaryWidth*magnification+10,
+							cow*BoundaryHeight*magnification+BoundaryHeight*magnification+10));
 					panelediter.revalidate();
 					repaint();
 					if(s == null)
@@ -558,7 +579,7 @@ public class Mapediter extends JFrame{
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if(MapMode == 5){
-					switch(arg0.getKeyCode()){
+					/*switch(arg0.getKeyCode()){
 					case KeyEvent.VK_UP:
 						me.Move(Common.UP);
 						break;
@@ -573,14 +594,41 @@ public class Mapediter extends JFrame{
 						break;
 					}
 					System.out.println("x:"+me.GetXCoordinate()+" y:"+me.GetYCoordinate());
-					//me.Move(direction);
+*/
+			        int keyCode = arg0.getKeyCode();
+
+			        if (keyCode == KeyEvent.VK_LEFT) {
+			            leftKey.press();
+			        }
+			        if (keyCode == KeyEvent.VK_RIGHT) {
+			            rightKey.press();
+			        }
+			        if (keyCode == KeyEvent.VK_UP) {
+			            upKey.press();
+			        }
+			        if (keyCode == KeyEvent.VK_DOWN) {
+			            downKey.press();
+			        }
 				}
 				
 			}
 
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				// TODO Auto-generated method stub
+		        int keyCode = arg0.getKeyCode();
+
+		        if (keyCode == KeyEvent.VK_LEFT) {
+		            leftKey.release();
+		        }
+		        if (keyCode == KeyEvent.VK_RIGHT) {
+		            rightKey.release();
+		        }
+		        if (keyCode == KeyEvent.VK_UP) {
+		            upKey.release();
+		        }
+		        if (keyCode == KeyEvent.VK_DOWN) {
+		            downKey.release();
+		        }
 				
 			}
 
@@ -596,13 +644,21 @@ public class Mapediter extends JFrame{
 		class RePaintThread implements Runnable{
 			public void run(){
 			    long error = 0;  
-			    int fps = 60;  
+			    int fps = 60;
 			    long idealSleep = (1000 << 16) / fps;  
 			    long oldTime;  
 			    long newTime = System.currentTimeMillis() << 16; 
 			    long sleepTime;
 			    while (true) {  
-			      oldTime = newTime;  
+			      oldTime = newTime;
+			      
+			      checkInput();
+			    
+			    if(me.isMoving()){
+			    	if(me.Move()){
+			    		
+			    	}
+			    }
 			      repaint();  
 			      newTime = System.currentTimeMillis() << 16;  
 			      sleepTime = idealSleep - (newTime - oldTime) - error; // ãxé~Ç≈Ç´ÇÈéûä‘  
@@ -616,7 +672,32 @@ public class Mapediter extends JFrame{
 				}   
 			      newTime = System.currentTimeMillis() << 16;  
 			      error = newTime - oldTime - sleepTime; // ãxé~éûä‘ÇÃåÎç∑  
+			      
 			    }  
+			}
+			
+			private void checkInput(){
+			    if (leftKey.isPressed()) {
+			    	if(!me.isMoving()){
+			    		me.setDirection(Common.LEFT);
+			    		me.setMoving(true);
+			    	}
+			    } else if (rightKey.isPressed()) {
+			    	if(!me.isMoving()){
+			    		me.setDirection(Common.RIGHT);
+			    		me.setMoving(true);
+			    	}
+			    } else if (upKey.isPressed()) {
+			    	if(!me.isMoving()){
+			    		me.setDirection(Common.UP);
+			    		me.setMoving(true);
+			    	}
+			     } else if (downKey.isPressed()) {
+				    	if(!me.isMoving()){
+				    		me.setDirection(Common.DOWN);
+				    		me.setMoving(true);
+				    	}
+			    }
 			}
 
 		}
