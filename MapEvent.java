@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class MapEvent{
 	private int MapEventNumber = -1;
 	private Image image = ImageLoadClass.ImageLoad("");
+	private String imageName = null;
 	private int x,y;//現在位置
 	private int px = 0,py = 0;//現在ピクセル
 	private double[] free = new double[Common.freeVariableMax];
@@ -58,17 +59,20 @@ public class MapEvent{
 	public MapEvent(int num,String s){
 		MapEventNumber = num;
 		image = ImageLoadClass.ImageLoad(s);
+		imageName = s;
 	}
 	public MapEvent(int num,int pass,String s){
 		MapEventNumber = num;
 		MapPassNumber = pass;
 		image = ImageLoadClass.ImageLoad(s);
+		imageName = s;
 	}
 	public MapEvent(int num,int thisX,int thisY,String s){
 		MapEventNumber = num;
 		x = thisX;
 		y = thisY;
 		image = ImageLoadClass.ImageLoad(s);
+		imageName = s;
 		
 	}
 	public MapEvent(int num,int pass,int thisX,int thisY,String s){
@@ -77,6 +81,7 @@ public class MapEvent{
 		x = thisX;
 		y = thisY;
 		image = ImageLoadClass.ImageLoad(s);
+		imageName = s;
 		
 	}
 	
@@ -157,6 +162,7 @@ public class MapEvent{
 	}
 	public void SetImage(String s){
 		image = ImageLoadClass.ImageLoad(s);
+		imageName = s;
 	}
 	
 	public int GetMapEventNumber(){
@@ -223,6 +229,7 @@ public class MapEvent{
 	 * 一マス単位での移動です
 	 */
 	public void Move(int direction){
+		moveSpeed *= Mapediter.magnification;
 		setDirection(direction);
 		switch(direction){
 		case Common.UP:
@@ -519,6 +526,10 @@ public class MapEvent{
         
         return false;
     }
+
+	public String getImageName() {
+		return imageName;
+	}
     
 
     

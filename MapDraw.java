@@ -8,6 +8,7 @@ import java.awt.image.ImageObserver;
 
 
 public class MapDraw {
+	rain rain = new rain();
 
 	//使用不可
 	public void show(Graphics g, Image MapImage, int[][] map, int cow, int row,int BoundaryWidth,int BoundaryHeight,int pngWidth) {
@@ -44,8 +45,20 @@ public class MapDraw {
 			cow = MaxY;
 		if(MaxX < row)
 			row = MaxX;
+		if(cow < 0){
+			cow = 0;
+		}
+		if(row < 0){
+			row = 0;
+		}
+		if(cowFirst < 0){
+			cowFirst = 0;
+		}
+		if(rowFirst < 0){
+			rowFirst = 0;
+		}
 
-
+		
 
 		
 		long start;
@@ -58,7 +71,7 @@ public class MapDraw {
 		if(Mapediter.MapMode == 5){
 			showGame(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
 		}
-		else{
+		else if (Mapediter.MapMode <= 4){
 			showNormal(g,MapImage,map,BoundaryWidth,BoundaryHeight,pngWidth,cowFirst,rowFirst,cow,row);
 			 g.setColor(Color.red);
 			 g.drawRect((MouseX/(BoundaryWidth*Mapediter.magnification))*BoundaryWidth*Mapediter.magnification, (MouseY/(BoundaryHeight*Mapediter.magnification))*BoundaryHeight*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*Mapediter.magnification);
@@ -150,6 +163,7 @@ public class MapDraw {
 		try{
 			 for(int i=rowFirst;i<row;i++){
 				 for(int j=cowFirst;j<cow;j++){
+					 try{
 					 if(map[i][j] == -1) 
 						 g.drawRect(i*BoundaryWidth*Mapediter.magnification, (j*BoundaryHeight+BoundaryHeight)*Mapediter.magnification, BoundaryWidth*Mapediter.magnification, BoundaryHeight*2*Mapediter.magnification);
 					 if(map[i][j] != -1){
@@ -175,11 +189,15 @@ public class MapDraw {
 							(int)(Mapediter.Map[i][j]%tmp)*BoundaryWidth + BoundaryWidth, (int)(Mapediter.Map[i][j]/tmp)*BoundaryHeight + BoundaryHeight,null);
 						
 					 }
+					 }catch(ArrayIndexOutOfBoundsException e){
+						 
+					 }
 
 
 				 }
 			 }
 			 //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+Mapediter.MapMode);
+			 rain.drawRain(g);
 				if(Mapediter.MapMode == 5)
 					showGame(g,BoundaryWidth,BoundaryHeight);
 			 
@@ -332,6 +350,12 @@ public class MapDraw {
 			cow = MaxY;
 		if(MaxX < row)
 			row = MaxX;
+		if(cowFirst < 0){
+			cowFirst = 0;
+		}
+		if(rowFirst < 0){
+			rowFirst = 0;
+		}
 		//ノーマル版
 		if(Mapediter.MapMode < 3)
 			LayerNormal(Map, Map2,Map3,Map4,Map5,MapImage,0,cow,row,cowFirst,rowFirst);

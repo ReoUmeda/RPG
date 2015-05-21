@@ -22,8 +22,14 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -126,7 +132,7 @@ public class Mapediter extends JFrame{
 	
 	static Clip pong;
 	static MapEvent me;
-	final static int magnification = 4;
+	static int magnification = 4;
     private ActionKey leftKey = new ActionKey();
     private ActionKey rightKey = new ActionKey();
     private ActionKey upKey = new ActionKey();
@@ -138,10 +144,11 @@ public class Mapediter extends JFrame{
     
     static int Jfreamx = 0;
     static int Jframey = 0;
-	
+	static ArrayList<MapEvent>  meal = new ArrayList<MapEvent>();
     
-	LedSocket s = null;//í≤åıÇÊÇ§
+	static LedSocket s = null;//í≤åıÇÊÇ§
 	Random rnd = new Random();
+	
 	
 	JPanel panelediter = new JPanel()
 	{
@@ -156,17 +163,17 @@ public class Mapediter extends JFrame{
 			 eheight = getHeight();
 			 System.out.println(ewidth+"aaaaa  "+eheight);*/
 			 	
-				 offsetX = (ewidth/2) - me.GetXCoordinate();
+				 /*offsetX = (ewidth/2) - me.GetXCoordinate();
 				 offsetX = Math.min(offsetX, 0);
 				 offsetX = Math.max(offsetX,ewidth - getWidth());
-				 offsetY = (eheight/2) - me.GetYCoordinate();
+				 offsetY = (eheight/2) - me.GetYCoordinate();*/
 				 
 			// System.out.println(ewidth);
 			 //System.out.println(eheight);
 			 //System.out.println(getContentPane().getHeight());
 			 mapediterscroll.getX();
 			 //g.drawImage(image2,xx,yy,xx+16,yy+16,x*2,y*12,x*2+16,y*12+16,null);
-
+			 
 			 md.Layer(Map, Map2,Map3,Map4,Map5,MapImage,0,
 					 row,cow,BoundaryWidth,BoundaryHeight,
 					 mapediterscroll.getViewport().getViewPosition().x,mapediterscroll.getViewport().getViewPosition().y,
@@ -391,13 +398,29 @@ public class Mapediter extends JFrame{
 			//art.start();
 			//bgmc.start(0);
 			bgmc.soundLoad("BGM\\BGM000.wav",1);
-			bgmc.start(0);
+			
+			bgmc.soundLoad("BGM\\BGM01.wav",1);
+			bgmc.soundLoad("BGM\\BGM02.wav",1);
+			bgmc.soundLoad("BGM\\BGM03.wav",1);
+			bgmc.soundLoad("BGM\\BGM04.wav",1);
+			bgmc.soundLoad("BGM\\BGM05.wav",1);
+			//bgmc.soundLoad("BGM\\BGM06.wav",1);
+			bgmc.soundLoad("BGM\\tam-g07.mid",1);
+			bgmc.soundLoad("BGM\\tam-g09.mid",1);
 			bgmse.soundLoad("se\\se00.wav", 0);
+			bgmse.soundLoad("se\\se01.wav", 0);
+			bgmse.soundLoad("se\\se02.wav", 1);
+			bgmse.soundLoad("se\\SE03.wav", 1);
+			bgmse.start(1);
+			bgmc.start(5);
 			//bgmc.start(1);
 			//bgmc.start(0);
 			me = new MapEvent(0,0,1,1,"image\\Mapevent\\0000.png");
+			me.setMoveSpeed(2*magnification);
 			ewidth = panelediter.getWidth();
 			eheight = panelediter.getHeight();
+			
+			
 			RPTThread.start();
 		}
 		public void JFrameSet(int SetWidth,int SetHeight){
@@ -430,10 +453,130 @@ public class Mapediter extends JFrame{
 						}
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="ï€ë∂"){
+					Save();
 				}
 				else if(((JMenuItem)e.getSource()).getText()=="ÉtÉ@ÉCÉãì«Ç›çûÇ›"){
+					try {
+						Load();
+					} catch (NumberFormatException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 
+			}
+
+
+
+			private void Save() {
+				File file = new File("save00");
+				PrintWriter pw =null;
+				try {
+					pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				pw.println(cow);
+				pw.println(row);
+				for(int i=0;i<row;i++){
+					for(int j=0;j<cow;j++){
+						pw.println(Map[i][j]);
+						pw.println(Map2[i][j]);
+						pw.println(Map3[i][j]);
+						pw.println(Map4[i][j]);
+						pw.println(Map5[i][j]);
+					}
+				}
+				pw.println(BoundaryHeight);
+				pw.println(BoundaryWidth);
+				pw.println(MapChipPngWidth);
+				pw.println(MapChipPngHeight);
+				pw.println(MapChipPngWidth_MapChipSizeWidth);
+				pw.println(MapChipPngHeight_MapChipSizeHeight);
+				pw.println(me.GetXCoordinate());
+				pw.println(me.GetYCoordinate());
+				pw.println(meal.size());
+				for(int i=0;i<meal.size();i++){
+					pw.println(meal.get(i).GetXCoordinate());
+					pw.println(meal.get(i).GetYCoordinate());
+					pw.println(meal.get(i).getImageName());
+				}
+				pw.close();
+				System.out.println(BoundaryWidth);
+			}
+			private void Load() throws NumberFormatException, IOException {
+				int tmp = MapMode;
+				MapMode = 999;
+				System.out.println(MapMode);
+				png = "map\\map00.png";
+				File file = new File("save00");
+				BufferedReader br = null;
+				try {
+					br = new BufferedReader(new FileReader(file));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					cow = Integer.parseInt(br.readLine());
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					row = Integer.parseInt(br.readLine());
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Map = new int[row][cow];
+				Map2 = new int[row][cow];
+				Map3 = new int[row][cow];
+				Map4 = new int[row][cow];
+				Map5 = new int[row][cow];
+				for(int i=0;i<row;i++){
+					for(int j=0;j<cow;j++){
+						Map[i][j] = Integer.parseInt(br.readLine());
+						Map2[i][j] = Integer.parseInt(br.readLine());
+						Map3[i][j] = Integer.parseInt(br.readLine());
+						Map4[i][j] = Integer.parseInt(br.readLine());
+						Map5[i][j] = Integer.parseInt(br.readLine());
+					}
+				}
+				System.out.println(row);
+				BoundaryHeight = Integer.parseInt(br.readLine());
+				BoundaryWidth = Integer.parseInt(br.readLine());
+				MapChipPngWidth = Integer.parseInt(br.readLine());
+				MapChipPngHeight = Integer.parseInt(br.readLine());
+				MapChipPngWidth_MapChipSizeWidth = Integer.parseInt(br.readLine());
+				MapChipPngHeight_MapChipSizeHeight = Integer.parseInt(br.readLine());
+				me = new MapEvent(0,0,1,1,"image\\Mapevent\\0000.png");
+				me.SetXCoordinate(Integer.parseInt(br.readLine()));
+				me.SetYCoordinate(Integer.parseInt(br.readLine()));
+				meal.clear();
+				int size = Integer.parseInt(br.readLine());
+				for(int i=0;i<size;i++){
+					meal.add(new MapEvent());
+					meal.get(i).SetXCoordinate(Integer.parseInt(br.readLine()));
+					meal.get(i).SetYCoordinate(Integer.parseInt(br.readLine()));
+					meal.get(i).SetImage(br.readLine());
+				}
+				br.close();
+				System.out.println(BoundaryWidth);
+				mc = new mapchip();
+				//System.out.println(Map3[0][0]);
+				//MapMode = tmp;
+				
 			}
 		}
 		public class LayerItemActionListener implements ActionListener {
@@ -578,6 +721,7 @@ public class Mapediter extends JFrame{
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
+				int keyCode = arg0.getKeyCode();
 				if(MapMode == 5){
 					/*switch(arg0.getKeyCode()){
 					case KeyEvent.VK_UP:
@@ -595,7 +739,6 @@ public class Mapediter extends JFrame{
 					}
 					System.out.println("x:"+me.GetXCoordinate()+" y:"+me.GetYCoordinate());
 */
-			        int keyCode = arg0.getKeyCode();
 
 			        if (keyCode == KeyEvent.VK_LEFT) {
 			            leftKey.press();
@@ -610,6 +753,18 @@ public class Mapediter extends JFrame{
 			            downKey.press();
 			        }
 				}
+				if(keyCode == KeyEvent.VK_U){
+					Mapediter.magnification++;
+				}
+				else if	(keyCode == KeyEvent.VK_T){
+					if(Mapediter.magnification != 1)
+						Mapediter.magnification--;
+				}
+				else if(keyCode == KeyEvent.VK_Q)
+					me.setMoveSpeed(me.getMoveSpeed()+1);
+				else if(keyCode == KeyEvent.VK_W)
+					me.setMoveSpeed(me.getMoveSpeed()-1);
+
 				
 			}
 
@@ -644,7 +799,7 @@ public class Mapediter extends JFrame{
 		class RePaintThread implements Runnable{
 			public void run(){
 			    long error = 0;  
-			    int fps = 60;
+			    int fps = 10;
 			    long idealSleep = (1000 << 16) / fps;  
 			    long oldTime;  
 			    long newTime = System.currentTimeMillis() << 16; 
@@ -653,11 +808,15 @@ public class Mapediter extends JFrame{
 			      oldTime = newTime;
 			      
 			      checkInput();
-			    
+			    if(Mapediter.MapMode == 5){
 			    if(me.isMoving()){
+		    		panelediter.setLocation(-me.GetXCoordinate()*Mapediter.BoundaryWidth*Mapediter.magnification-me.getPx()+300, 
+		    				-me.GetYCoordinate()*Mapediter.BoundaryHeight*Mapediter.magnification-me.getPy()+200);
 			    	if(me.Move()){
+
 			    		
 			    	}
+			    }
 			    }
 			      repaint();  
 			      newTime = System.currentTimeMillis() << 16;  
@@ -669,7 +828,8 @@ public class Mapediter extends JFrame{
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}   
+				} 
+				//s.send(100, 100, 300, 100);
 			      newTime = System.currentTimeMillis() << 16;  
 			      error = newTime - oldTime - sleepTime; // ãxé~éûä‘ÇÃåÎç∑  
 			      

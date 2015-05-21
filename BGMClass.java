@@ -129,7 +129,7 @@ public class BGMClass implements LineListener {
 	        if (event.getType() == LineEvent.Type.STOP) {
 	            Clip clip = (Clip) event.getSource();
 	            clip.stop();
-	            clip.setFramePosition(0); // Ä¶ˆÊ’u‚ğÅ‰‚É–ß‚·
+	            clip.setFramePosition(1000); // Ä¶ˆÊ’u‚ğÅ‰‚É–ß‚·
 	            clip.start();
 	        }
 			
